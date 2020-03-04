@@ -1,6 +1,7 @@
 EMVIQ = {};
 
-EMVIQ.MODELS_ROOT = "../../models/";
+EMVIQ.MODELS_ROOT = "../../models/"; // remove
+EMVIQ.PROJECT_FOLDER = "projects/";
 
 EMVIQ.currPeriodName = undefined;
 EMVIQ.EM = new ATON.emviq.EM();
