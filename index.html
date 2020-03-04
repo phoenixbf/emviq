@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+
+<title>EMviq DEMO based on ATON</title>
+<link rel="stylesheet" type="text/css" href="../../css/aton.css">
+<link rel="stylesheet" type="text/css" href="res/emviq.css">
+
+<script type="text/javascript" src="../../vendors/gunzip.min.js"></script>
+<script type="text/javascript" src="../../vendors/jquery.min.js"></script>
+<script type="text/javascript" src="../../vendors/bluebird.min.js"></script>
+<script type="text/javascript" src="../../vendors/hammer.min.js"></script>
+<script type="text/javascript" src="../../vendors/screenfull.min.js"></script>
+
+<script type="text/javascript" src="../../vendors/OSG.min.js"></script>
+
+<script type="text/javascript" src="../../js/ATON.core.js"></script>
+
+<!--  Collaborative services
+<script type="text/javascript" src="../services/node_modules/socket.io-client/dist/socket.io.js"></script>
+<script type="text/javascript" src="../js/ATON.vroadcast.js"></script>
+    -->
+
+<!-- Record/Tracer visualization
+<script type="text/javascript" src="../js/ATON.tracer.js"></script>
+<script type="text/javascript" src="../js/ATON.QV.js"></script>
+    -->
+
+<!-- EMviq -->
+<script type="text/javascript" src="../../vendors/xml2json.min.js"></script>
+<script type="text/javascript" src="../../js/ATON.emviq.js"></script>
+
+<!--  EMviq FrontEnd -->
+<script type="text/javascript" src="js/emviq.js"></script>
+</head>
+
+
+<body oncontextmenu="return false;" style="background-color: rgba(255,255,255, 0);">
+
+	<!-- Our 3D View -->
+	<div id="ViewContainer" class="view3D">
+	    <canvas id="View" oncontextmenu="return false;"></canvas>
+	</div>
+
+    <!-- TOP navbar -->
+    <div class="atonToolbar" style="background-color: rgba(255,255,255, 0.0)">
+        <button id="idFS" type="button" class="atonBTN" onclick="ATON.FE.toggleFullscreen()"><img src="../../res/ii-inv-fs.png"></button>
+        <button type="button" class="atonBTN" onclick="ATON.requestHome(1.0)"><img src="../../res/ii-inv-home.png"></button>
+        <button id="idVR" type="button" class="atonBTN" onclick="ATON.toggleVR()"><img src="../../res/ii-inv-vr.png"></button>
+<!--
+        <input id="idSearch" type="text" size="30" placeholder="Search...">
+-->
+    </div>
+
+    <!-- BOTTOM navbar -->
+    <div class="atonToolbar atonToolbar-bottom" style="background-color: rgba(0,0,0, 0.0)">
+
+        <div style="display:inline-block; width:50%;">
+            <h3 id="idPeriodName" class="emviqPeriod">Timeline</h3>
+            <input id="idTimeline" type="range" min="0" max="1" oninput="ATON.FE.timeSlideByPeriodID(this.value)">
+        </div><br>
+    
+        <div class="emviqLabel">
+            <span id="idProxyID"></span>
+<!--
+            <div id="idSpeechRecBTN" onclick="ATON.speechRecognitionStart()" style="display:inline">
+                <img src="../../res/ii-inv-speech.png" style="width:16px; height:auto;">
+                <span id="idSpeechText"></span>
+            </div>
+-->
+        </div><br>
+
+        <div style="float:right">Powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/">ATON 2.0</a> - CNR ISPC&nbsp;</div>
+
+    </div>
+
+    <!-- Loader -->
+	<div class="atonCenterLoader" style="display:none;" id="idLoader"><img src="../../res/loader.png"></div>
+
+</body>
+</html>
