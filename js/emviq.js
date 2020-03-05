@@ -7,8 +7,16 @@ EMVIQ.project = undefined;
 EMVIQ.currPeriodName = undefined;
 EMVIQ.EM = new ATON.emviq.EM();
 
-EMVIQ.setupPage = function(){
 
+
+EMVIQ.setupPage = function(){
+    let elSearch = document.getElementById( "idSearch" );
+    elSearch.addEventListener( 'keydown', function ( e ) { e.stopPropagation(); }, false );
+
+    $('#idSearch').on('keyup', ()=>{
+        let string = $('#idSearch').val();
+        EMVIQ.search(string);
+        });
 };
 
 EMVIQ.toggleFullscreen = function(b){
@@ -21,6 +29,7 @@ EMVIQ.toggleFullscreen = function(b){
         }
 };
 
+/*
 EMVIQ.buildLayerMenu = function(){
     if (ATON.layers.length == 0) return;
 
@@ -37,8 +46,9 @@ EMVIQ.buildLayerMenu = function(){
     //$('#idLayers').append('<button type="button" class="atonBTN" style="width:100%" onclick="ATON.requestPOVbyActiveLayers()">Focus</button>');
     //$('#idLayers').append('<input type="checkbox" name="idIsolateLayer">Isolate');
 };
+*/
 
-EMVIQ.highlightProxy = function(id){
+EMVIQ.highlightProxies = function(idlist){
     let proxiesGroup = ATON.getDescriptor(EMVIQ.currPeriodName);
     if (!proxiesGroup) return;
 
@@ -46,21 +56,65 @@ EMVIQ.highlightProxy = function(id){
 
     //console.log(dg);
     let numProxies = proxiesGroup.children.length;
+    let numHL = idlist.length;
 
     for (let d = 0; d < numProxies; d++){
         const D = proxiesGroup.children[d];
         let did = D.getUniqueID();
-        
-        if (did === id){
-            D.getSS().setTextureAttributeAndModes( 0, p.tex, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
-            //D.setStateSet(undefined);
-            }
-        else {
-            D.setStateSet(undefined);
-            //D.getSS().setTextureAttributeAndModes( 0, ATON.utils.fallbackAlphaTex, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
+
+        D.setStateSet(undefined);
+
+        for (let i = 0; i<numHL; i++){
+            if (did === idlist[i]){
+                D.getSS().setTextureAttributeAndModes( 0, p.tex, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
+                //if (bShowParent && D._parents[0]) D._parents[0].show(); FIXME:
+                }
             }
         }
 };
+
+// Search
+EMVIQ.search = function(string){
+    if (string.length < 2) return;
+
+    string = string.toLowerCase();
+
+    console.log("Searching "+string);
+
+    let hlist = [];
+    for (let did in ATON.descriptors){
+        let didstr = did.toLowerCase();
+        //let D = ATON.descriptors[did];
+
+        if (didstr.startsWith(string)){
+            hlist.push(did);
+            //console.log("MATCH "+did);
+            }
+
+/*
+        var keywords = key.split(" ");
+        //console.log(keywords);
+
+        for (k = 0; k < keywords.length; k++){
+            var kw = keywords[k];
+            if (kw.startsWith(string)) i = key;
+            }
+*/
+        }
+
+    let len = hlist.length;
+    if (len > 0){
+        //console.log(hlist);
+
+        EMVIQ.highlightProxies(hlist);
+
+        $("#idSearchMatches").html("<b>"+len+"</b> matches");
+
+        //if (ATON.descriptors[i].onSelect) ATON.descriptors[i].onSelect();  
+        //else ATON.requestPOVbyDescriptor(i, 0.5);
+        }
+};
+
 
 EMVIQ.logPOV = function(){
     console.log(
@@ -119,10 +173,6 @@ EMVIQ.highlighPeriodByIndex = function(i){
     EMVIQ.highlighPeriodByName(period.name);
 };
 
-EMVIQ.search = function(str){
-
-};
-
 
 
 
@@ -169,7 +219,7 @@ window.addEventListener( 'load', function () {
         //EMVIQ.buildSG();
         ATON.loadScene(EMVIQ.project+"/scene.json");
 
-        document.getElementById("idTimeline").setAttribute("max", EMVIQ.EM.timeline.length);
+        document.getElementById("idTimeline").setAttribute("max", EMVIQ.EM.timeline.length-1);
         //console.log("----");
         //console.log(ATON._groupDescriptors);
         //console.log(ATON.descriptors["IIAD Rec"].node);
@@ -184,7 +234,7 @@ window.addEventListener( 'load', function () {
         //auDHover.play();
         //ATON.speechSynthesis(hovD);
 
-        EMVIQ.highlightProxy(hovD);
+        EMVIQ.highlightProxies([hovD]);
         
         if (EMVIQ.EM.proxyNodes[hovD]){
             let proxy = EMVIQ.EM.proxyNodes[hovD];
