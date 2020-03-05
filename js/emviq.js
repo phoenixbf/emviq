@@ -2,6 +2,7 @@ EMVIQ = {};
 
 EMVIQ.MODELS_ROOT = "../../models/"; // remove
 EMVIQ.PROJECT_FOLDER = "projects/";
+EMVIQ.project = undefined;
 
 EMVIQ.currPeriodName = undefined;
 EMVIQ.EM = new ATON.emviq.EM();
@@ -89,99 +90,6 @@ EMVIQ.attachListeners = function(){
         });
 };
 
-EMVIQ.buildSG = function(){
-
-    // XXsec
-    let periodName = "XX sec";
-
-    for (let b = 1; b <= 10; b++)
-        ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/XXsec/LOD2_TM"+b+".osgjs").attachTo(periodName);
-/*
-        ATON.addGraph(EMVIQ.MODELS_ROOT+"_prv/greattemple/XXsec/_lo-LOD2_TM"+b+".osgjs", { 
-            layer: periodName,
-            hiresurl: EMVIQ.MODELS_ROOT+"_prv/greattemple/XXsec/LOD2_TM"+b+".osgjs",
-            hirespxsize: 600000,
-            });
-*/
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/XXsec/GreatTemple_surroundings.osgjs").attachTo(periodName);
-    //ATON.addGraph(EMVIQ.MODELS_ROOT+"_prv/greattemple/XXsec/GreatTemple_surroundings.osgjs",{layer: periodName});
-
-    // [43.795,-8.741,-3.043] [-5.142,2.907,-2.637]
-    // 38,653 -5,834‬ -5,68‬
-    //let T = ATON.utils.generateTransformFromString("-57.8719596862793 -303.2223815917969 4.660361289978027 0 0 -0.163");
-/*
-    let T = ATON.utils.generateTransformFromString("0 0 0 0 0 -0.163");
-    ATON.transformLayerByMatrix(periodName, T.getMatrix());
-    ATON.translateLayer(periodName, [-106.5, -290, 5.0]);
-*/
-    ATON.getNode(periodName).transformByString("-106.5 -290 5.0 0 0 -0.163");
-
-    // IIAD Rec
-    periodName = "IIAD Rec";
-    let N = ATON.getNode(periodName);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Walls_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Travi_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto1_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto_6_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto_5_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto_4_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto_3_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tetto_2_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Terreno_interno_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tempio_6_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tempio_5_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tempio_4_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tempio_3_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Tempio_2_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/tempio_1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Podio_2_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Podio1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Sottotetto_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Scale_2_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Scale_1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Porta2_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Porta1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Pavimento_1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Ingresso_3_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Ingresso_2_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Ingresso_1_BAKE_m.osgjs").attachTo(N);
-
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Cassettonato_BAKE_m.osgjs").attachTo(N);
-    ATON.createAssetNode(EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Architrave_1_BAKE_m.osgjs").attachTo(N);
-
-    
-    ATON.createProductionFromASCII(
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_light_m.osgjs",
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_light-inst.txt"
-        ).attachTo(N);
-
-    ATON.createProductionFromASCII(
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_shadow_m.osgjs",
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_shadow-inst.txt"
-        ).attachTo(N);
-
-    ATON.createProductionFromASCII(
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_entrance_m.osgjs",
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_entrance-inst.txt" 
-        ).attachTo(N);
-
-    ATON.createProductionFromASCII(
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_tempio_m.osgjs",
-        EMVIQ.MODELS_ROOT+"_prv/greattemple/IIAD/Column_tempio-inst.txt" 
-        ).attachTo(N);
-
-};
-
 EMVIQ.highlighPeriodByName = function(periodname){
     $('#idPeriodName').html(periodname);
     EMVIQ.currPeriodName = periodname;
@@ -233,7 +141,10 @@ window.addEventListener( 'load', function () {
 
     EMVIQ.setupPage();
 
+    // Params
     if (ATON.utils.getURLparams().d) ATON.setDevicePixelRatio(ATON.utils.getURLparams().d);
+    if (ATON.utils.getURLparams().p) EMVIQ.project = EMVIQ.PROJECT_FOLDER + ATON.utils.getURLparams().p;
+    
 
     ATON._mainSS.getUniform('uFogDistance').setFloat( 150.0 );
     $('body').css('background-color', 'rgb(65,70,79)');
@@ -249,13 +160,14 @@ window.addEventListener( 'load', function () {
     ATON._descrSS.setAttributeAndModes( df, osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE);
     ATON._descrSS.setTextureAttributeAndModes( 0, ATON.utils.fallbackAlphaTex, osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE);
 
-    EMVIQ.EM.folderProxies = EMVIQ.MODELS_ROOT+"_prv/greattemple/proxies/";
+    EMVIQ.EM.folderProxies = EMVIQ.project+"/proxies/";
 
-    EMVIQ.EM.parseGraphML(EMVIQ.MODELS_ROOT+"_prv/greattemple/gt-em.graphml", ()=>{
+    EMVIQ.EM.parseGraphML(EMVIQ.project+"/em.graphml", ()=>{
         EMVIQ.EM.realizeFromJSONnode();
         
         //EMVIQ.EM.buildEMgraph();
-        EMVIQ.buildSG();
+        //EMVIQ.buildSG();
+        ATON.loadScene(EMVIQ.project+"/scene.json");
 
         document.getElementById("idTimeline").setAttribute("max", EMVIQ.EM.timeline.length);
         //console.log("----");

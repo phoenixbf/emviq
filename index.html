@@ -49,7 +49,7 @@
 
     <!-- TOP navbar -->
     <div class="atonToolbar" style="background-color: rgba(255,255,255, 0.0)">
-        <button id="idFS" type="button" class="atonBTN" onclick="ATON.FE.toggleFullscreen()"><img src="../../res/ii-inv-fs.png"></button>
+        <button id="idFS" type="button" class="atonBTN" onclick="EMVIQ.toggleFullscreen()"><img src="../../res/ii-inv-fs.png"></button>
         <button type="button" class="atonBTN" onclick="ATON.requestHome(1.0)"><img src="../../res/ii-inv-home.png"></button>
         <button id="idVR" type="button" class="atonBTN" onclick="ATON.toggleVR()"><img src="../../res/ii-inv-vr.png"></button>
 <!--
@@ -60,9 +60,9 @@
     <!-- BOTTOM navbar -->
     <div class="atonToolbar atonToolbar-bottom" style="background-color: rgba(0,0,0, 0.0)">
 
-        <div style="display:inline-block; width:50%;">
+        <div style="display:inline-block; width:80%;">
             <h3 id="idPeriodName" class="emviqPeriod">Timeline</h3>
-            <input id="idTimeline" type="range" min="0" max="1" oninput="ATON.FE.timeSlideByPeriodID(this.value)">
+            <input id="idTimeline" type="range" min="0" max="1" oninput="EMVIQ.highlighPeriodByIndex(this.value)">
         </div><br>
     
         <div class="emviqLabel">
@@ -73,9 +73,13 @@
                 <span id="idSpeechText"></span>
             </div>
 -->
-        </div><br>
+        </div>
+    </div>
 
-        <div style="float:right">Powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/">ATON 2.0</a> - CNR ISPC&nbsp;</div>
+    <!-- Powered by -->
+    <div class="atonToolbar atonToolbar-bottom poweredBy" style="width: 150px;">
+        powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/" target="_blank">ATON</a>
+    </div>
 
     </div>
 
