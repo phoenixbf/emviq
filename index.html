@@ -54,6 +54,7 @@
         <button id="idVR" type="button" class="atonBTN" onclick="ATON.toggleVR()"><img src="../../res/ii-inv-vr.png"></button>
     </div>
 
+    <!-- Proxy highlighted -->
     <div class="emviqProxyHighlight">
         <div id="idProxyID" class="emviqLabel"></div>
     </div>
@@ -64,8 +65,10 @@
             <h3 id="idPeriodName" class="emviqPeriod">Timeline</h3>
             <input id="idTimeline" type="range" min="0" max="1" oninput="EMVIQ.highlighPeriodByIndex(this.value)">
         </div>
-        <div class="emviqSearchBox"><input id="idSearch" type="text" size="30" placeholder="Search...">
-        <div id="idSearchMatches" class="emviqSearchMatches"></div>
+        <div class="emviqSearchBox">
+            <button type="button" class="atonBTN" style="background-color: rgba(100,0,0, 0.5);" onclick="EMVIQ.searchClear()">X</button>
+            <input id="idSearch" type="text" size="20" placeholder="Search...">
+            <div id="idSearchMatches" class="emviqSearchMatches"></div>
         </div>
     </div>
 

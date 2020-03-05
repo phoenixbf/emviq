@@ -1,6 +1,15 @@
+/*!
+    @preserve
+
+    EMviq web-app based on ATON
+
+ 	@author Bruno Fanini
+	VHLab, CNR ISPC
+
+==================================================================================*/
+
 EMVIQ = {};
 
-EMVIQ.MODELS_ROOT = "../../models/"; // remove
 EMVIQ.PROJECT_FOLDER = "projects/";
 EMVIQ.project = undefined;
 
@@ -9,14 +18,18 @@ EMVIQ.EM = new ATON.emviq.EM();
 
 
 
+
 EMVIQ.setupPage = function(){
     let elSearch = document.getElementById( "idSearch" );
-    elSearch.addEventListener( 'keydown', function ( e ) { e.stopPropagation(); }, false );
+    elSearch.addEventListener( 'keydown', (e)=>{ e.stopPropagation(); }, false );
 
     $('#idSearch').on('keyup', ()=>{
         let string = $('#idSearch').val();
         EMVIQ.search(string);
         });
+
+    $('#idSearch').focus(()=>{ ATON._bPauseDescriptorQuery = true; });
+    $('#idSearch').blur(()=>{ ATON._bPauseDescriptorQuery = false; });
 };
 
 EMVIQ.toggleFullscreen = function(b){
@@ -29,30 +42,23 @@ EMVIQ.toggleFullscreen = function(b){
         }
 };
 
-/*
-EMVIQ.buildLayerMenu = function(){
-    if (ATON.layers.length == 0) return;
+EMVIQ.blurProxiesCurrPeriod = function(){
+    let proxiesGroup = ATON.getDescriptor(EMVIQ.currPeriodName);
+    if (!proxiesGroup) return;
 
-    for (var layername in ATON.layers){
-        let checked = "checked";
-        if (ATON.layers[layername].getNodeMask() === 0) checked = "";
-        //console.log(layername+" : "+checked);
+    let numProxies = proxiesGroup.children.length;
+    for (let d = 0; d < numProxies; d++){
+        let D = proxiesGroup.children[d];
 
-        ////$('#idLayers').append('<option value="' + key + '">' + key + '</option>');
-
-        //$('#idLayers').append('<div class="atonBTN" onclick=\'ATON.isolateLayer("'+layername+'")\' >'+layername+'</div><br>');
+        D.setStateSet(undefined);
         }
-
-    //$('#idLayers').append('<button type="button" class="atonBTN" style="width:100%" onclick="ATON.requestPOVbyActiveLayers()">Focus</button>');
-    //$('#idLayers').append('<input type="checkbox" name="idIsolateLayer">Isolate');
 };
-*/
 
 EMVIQ.highlightProxies = function(idlist){
     let proxiesGroup = ATON.getDescriptor(EMVIQ.currPeriodName);
     if (!proxiesGroup) return;
 
-    let p = EMVIQ.EM.getPeriodFromName(EMVIQ.currPeriodName);
+    //let period = EMVIQ.EM.getPeriodFromName(EMVIQ.currPeriodName);
 
     //console.log(dg);
     let numProxies = proxiesGroup.children.length;
@@ -62,12 +68,17 @@ EMVIQ.highlightProxies = function(idlist){
         const D = proxiesGroup.children[d];
         let did = D.getUniqueID();
 
+        let proxy  = EMVIQ.EM.proxyNodes[did];
+        let texcol = ATON.emviq.nodeTexColors[proxy.type];
+        //if (!texcol) texcol = period.tex;
+        //console.log(proxy.type);
+
         D.setStateSet(undefined);
 
         for (let i = 0; i<numHL; i++){
             if (did === idlist[i]){
-                D.getSS().setTextureAttributeAndModes( 0, p.tex, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
-                //if (bShowParent && D._parents[0]) D._parents[0].show(); FIXME:
+                //D.getSS().setTextureAttributeAndModes( 0, period.tex, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
+                D.getSS().setTextureAttributeAndModes( 0, texcol, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
                 }
             }
         }
@@ -75,44 +86,69 @@ EMVIQ.highlightProxies = function(idlist){
 
 // Search
 EMVIQ.search = function(string){
-    if (string.length < 2) return;
+    if (string.length < 2){
+        EMVIQ.blurProxiesCurrPeriod();
+        return;
+        }
 
     string = string.toLowerCase();
 
-    console.log("Searching "+string);
+    //console.log("Searching "+string);
 
-    let hlist = [];
+    let hProxies  = [];
+    let bsProxies = new osg.BoundingSphere();
+
     for (let did in ATON.descriptors){
-        let didstr = did.toLowerCase();
-        //let D = ATON.descriptors[did];
+        let bAdd = false;
 
-        if (didstr.startsWith(string)){
-            hlist.push(did);
+        let didstr = did.toLowerCase();
+        let D = ATON.getDescriptor(did);
+        let proxy = EMVIQ.EM.proxyNodes[did];
+
+        // Matching rules
+        // Proxy ID
+        if (didstr.startsWith(string)) bAdd = true;
+
+        // Proxy description
+        if (proxy && proxy.description){
+            let descrKeys = proxy.description.split(" ");
+
+            for (k = 0; k < descrKeys.length; k++){
+                descrK = descrKeys[k].toLowerCase();
+
+                if (descrK.startsWith(string)) bAdd = true;
+                }
+            }
+
+
+        if (bAdd){
+            hProxies.push(did);
+            bsProxies.expandByBoundingSphere( D.getBoundingSphere() );
             //console.log("MATCH "+did);
             }
-
-/*
-        var keywords = key.split(" ");
-        //console.log(keywords);
-
-        for (k = 0; k < keywords.length; k++){
-            var kw = keywords[k];
-            if (kw.startsWith(string)) i = key;
-            }
-*/
+        
         }
 
-    let len = hlist.length;
+    let len = hProxies.length;
     if (len > 0){
-        //console.log(hlist);
+        //console.log(hProxies);
+        $("#idProxyID").html("");
 
-        EMVIQ.highlightProxies(hlist);
+        EMVIQ.highlightProxies(hProxies);
+        ATON.requestPOVbyBound(bsProxies, 2.0, 1.0);
 
         $("#idSearchMatches").html("<b>"+len+"</b> matches");
 
         //if (ATON.descriptors[i].onSelect) ATON.descriptors[i].onSelect();  
         //else ATON.requestPOVbyDescriptor(i, 0.5);
         }
+    else EMVIQ.blurProxiesCurrPeriod();
+};
+
+EMVIQ.searchClear = function(){
+    $('#idSearch').val('');
+    $("#idSearchMatches").html("");
+    ATON._bPauseDescriptorQuery = false;
 };
 
 
@@ -129,26 +165,17 @@ EMVIQ.logPOV = function(){
 };
 
 EMVIQ.attachListeners = function(){
-	$(function() {
-		$(document).keydown(function(e){
-	    	if (e.key == 'c'){
-				EMVIQ.logPOV();
-                }
-
-            });
-
-        // UP
-        $(document).keyup(function(e){
-            //if (e.key == 'x'){}  
-            });
+    ATON.on("KeyPress",(k)=>{
+        if (k === 'f'){
+            ATON._bPauseDescriptorQuery = !ATON._bPauseDescriptorQuery;
+            }
         });
 };
 
 EMVIQ.highlighPeriodByName = function(periodname){
     $('#idPeriodName').html(periodname);
+    
     EMVIQ.currPeriodName = periodname;
-    /*if (ATON.layers[periodname])*/ 
-        //ATON.isolateLayer(periodname);
 
     EMVIQ.EM.timeline.forEach(p => {
         if (p.name === periodname){
@@ -170,6 +197,7 @@ EMVIQ.highlighPeriodByIndex = function(i){
     let period = EMVIQ.EM.timeline[i];
     if (!period) return;
 
+    //EMVIQ.currPeriodIndex = i;
     EMVIQ.highlighPeriodByName(period.name);
 };
 
@@ -178,7 +206,7 @@ EMVIQ.highlighPeriodByIndex = function(i){
 
 // MAIN
 //===================================================
-window.addEventListener( 'load', function () {
+window.addEventListener( 'load', ()=>{
     //console.log("OK");
 
     // First we grab canvas element
@@ -186,7 +214,7 @@ window.addEventListener( 'load', function () {
     $('#idLoader').show();
 
     // Realize
-    ATON.shadersFolder = "../../res/shaders";
+    ATON.shadersFolder = "res/shaders";
     ATON.realize(canvas);
 
     EMVIQ.setupPage();
