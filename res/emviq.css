@@ -3,18 +3,20 @@
     display: inline-block;
     cursor: pointer;
 
+    font-size: large;
+
     color: #FFF;
     text-shadow: 0 0 5px black;
 
     /*line-height: 18px;*/
-    text-align: center;
+    text-align: right;
     vertical-align: middle;
-
+/*
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-
-    padding: 8px;
-    margin: 3px;
+*/
+    padding: 5px;
+    margin: 1px;
 
     outline: none;
 }
@@ -23,8 +25,23 @@
     font-size: x-large;
 
     color: #FFF;
-    text-shadow: 0 0 5px black;
+    text-shadow: 0 0 15px black;
     
     text-align: center;
     vertical-align: middle;   
+}
+
+.emviqProxyHighlight {
+    position: absolute;
+
+    right: 0px;
+    top: 0px;
+
+    padding: 5px;
+
+    height: 40px;
+/*
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+*/
 }
