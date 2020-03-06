@@ -172,7 +172,7 @@ EMVIQ.attachListeners = function(){
         });
 };
 
-EMVIQ.highlighPeriodByName = function(periodname){
+EMVIQ.highlightPeriodByName = function(periodname){
     $('#idPeriodName').html(periodname);
     
     EMVIQ.currPeriodName = periodname;
@@ -193,12 +193,14 @@ EMVIQ.highlighPeriodByName = function(periodname){
 };
 
 // By index
-EMVIQ.highlighPeriodByIndex = function(i){
+EMVIQ.highlightPeriodByIndex = function(i){
     let period = EMVIQ.EM.timeline[i];
     if (!period) return;
 
+    $("#idTimeline").val(i);
+
     //EMVIQ.currPeriodIndex = i;
-    EMVIQ.highlighPeriodByName(period.name);
+    EMVIQ.highlightPeriodByName(period.name);
 };
 
 
@@ -289,7 +291,7 @@ window.addEventListener( 'load', ()=>{
         //for (d in ATON.descriptors){ if (ATON.descriptors[d].node) ATON.descriptors[d].node.setNodeMask(0x0);  }
 
         //ATON.isolateLayer("IIAD");
-        EMVIQ.highlighPeriodByName("IIAD Rec");
+        EMVIQ.highlightPeriodByName("IIAD Rec");
 
         //console.log(ATON._groupDescriptors);
 
