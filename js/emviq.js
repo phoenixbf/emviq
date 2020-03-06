@@ -16,7 +16,8 @@ EMVIQ.project = undefined;
 EMVIQ.currPeriodName = undefined;
 EMVIQ.EM = new ATON.emviq.EM();
 
-
+EMVIQ._infotrans = undefined;
+EMVIQ._infotext  = undefined;
 
 
 EMVIQ.setupPage = function(){
@@ -28,7 +29,7 @@ EMVIQ.setupPage = function(){
         EMVIQ.search(string);
         });
 
-    $('#idSearch').focus(()=>{ ATON._bPauseDescriptorQuery = true; });
+    $('#idSearch').focus(()=>{ ATON._bPauseDescriptorQuery = true; EMVIQ.switchInfoNode(false); });
     $('#idSearch').blur(()=>{ ATON._bPauseDescriptorQuery = false; });
 };
 
@@ -165,6 +166,14 @@ EMVIQ.logPOV = function(){
 };
 
 EMVIQ.attachListeners = function(){
+
+    // Custom doubletap
+    ATON.clearEventHandlers("DoubleTap");
+    ATON.on("DoubleTap", (e)=>{
+        if (ATON._hoveredDescriptor) ATON.requestPOVbyDescriptor(ATON._hoveredDescriptor, 0.5);
+        else ATON._requestRetarget();
+        });
+
     ATON.on("KeyPress",(k)=>{
         if (k === 'f'){
             ATON._bPauseDescriptorQuery = !ATON._bPauseDescriptorQuery;
@@ -197,13 +206,81 @@ EMVIQ.highlightPeriodByIndex = function(i){
     let period = EMVIQ.EM.timeline[i];
     if (!period) return;
 
-    $("#idTimeline").val(i);
+    //$("#idTimeline").val(i);
 
     //EMVIQ.currPeriodIndex = i;
     EMVIQ.highlightPeriodByName(period.name);
 };
 
 
+EMVIQ.buildSpatialUI = function(){
+    EMVIQ._infotrans = new osg.MatrixTransform();
+    EMVIQ._infotrans.setCullingActive( false );
+
+    let infoat = new osg.AutoTransform();
+    //infoat.setPosition([0,-0.5,0]);
+    infoat.setAutoRotateToScreen(true);
+    infoat.setAutoScaleToScreen(true);
+
+    infoat.getOrCreateStateSet().setRenderingHint('TRANSPARENT_BIN');
+    infoat.getOrCreateStateSet().setAttributeAndModes(
+        new osg.BlendFunc(osg.BlendFunc.SRC_ALPHA, osg.BlendFunc.ONE_MINUS_SRC_ALPHA), 
+        osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE
+        );
+
+    EMVIQ._infotrans.getOrCreateStateSet().setRenderingHint('TRANSPARENT_BIN');
+    EMVIQ._infotrans.getOrCreateStateSet().setAttributeAndModes(
+        new osg.BlendFunc(osg.BlendFunc.SRC_ALPHA, osg.BlendFunc.ONE_MINUS_SRC_ALPHA), 
+        osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE
+        );
+
+    let df = new osg.Depth( osg.Depth.ALWAYS );
+    df.setRange(0.0,1.0);
+    df.setWriteMask(false); // important
+    EMVIQ._infotrans.getOrCreateStateSet().setAttributeAndModes( df, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
+
+    // BG
+    let bgHoffset = 1.0;
+    let bg = osg.createTexturedQuadGeometry(
+        -75.0, -25.0, bgHoffset,      // corner
+        150, 0, 0,       // width
+        0, 50, 0 );     // height
+
+    bg.getOrCreateStateSet().setTextureAttributeAndModes(0, ATON.utils.createFillTexture([0,0,0,0.5]));
+    infoat.addChild( bg );
+
+    // text
+    EMVIQ._infotext = new osgText.Text("label");
+    EMVIQ._infotext.setForcePowerOfTwo(true);
+    EMVIQ._infotext.setFontResolution(32);
+    EMVIQ._infotext.setCharacterSize( 40.0 );
+    EMVIQ._infotext.setPosition( [0.0,0.0,2.0] );
+    EMVIQ._infotext.setColor([1,1,1,1]);
+    
+    infoat.addChild( EMVIQ._infotext );
+    EMVIQ._infotrans.addChild(infoat);
+    ATON._rootUI.addChild(EMVIQ._infotrans);
+
+    EMVIQ.switchInfoNode(false);
+};
+
+EMVIQ.switchInfoNode = function(b){
+    if (b) EMVIQ._infotrans.setNodeMask(ATON_MASK_UI);
+    else EMVIQ._infotrans.setNodeMask(0x0);
+};
+
+EMVIQ.updateInfoNodeLocation = function(p){
+    let M = EMVIQ._infotrans.getMatrix();
+    osg.mat4.setTranslation(M, p);
+};
+
+// Main update
+EMVIQ.update = function(){
+    
+    if (ATON._pickedDescriptorData){
+        EMVIQ.updateInfoNodeLocation(ATON._pickedDescriptorData.p);
+        }
+};
 
 
 // MAIN
@@ -232,6 +309,9 @@ window.addEventListener( 'load', ()=>{
 
     ATON._bQueryUseOcclusion = false;
     ATON.setHome([-0.09,-27.80,-0.3],[0.07,-20.27,-0.3]);
+
+    EMVIQ.buildSpatialUI();
+    ATON.addOnTickRoutine( EMVIQ.update );
 
     // EM
     var df = new osg.Depth( osg.Depth.ALWAYS );
@@ -265,6 +345,9 @@ window.addEventListener( 'load', ()=>{
         //ATON.speechSynthesis(hovD);
 
         EMVIQ.highlightProxies([hovD]);
+
+        EMVIQ.switchInfoNode(true);
+        EMVIQ._infotext.setText(hovD);
         
         if (EMVIQ.EM.proxyNodes[hovD]){
             let proxy = EMVIQ.EM.proxyNodes[hovD];
@@ -276,6 +359,7 @@ window.addEventListener( 'load', ()=>{
         });
     ATON.on("ShapeDescriptorLeft", ()=>{
         $("#idProxyID").html("");
+        EMVIQ.switchInfoNode(false);
         });
 
     // All complete 
