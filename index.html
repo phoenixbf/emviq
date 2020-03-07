@@ -66,16 +66,18 @@
             <input id="idTimeline" type="range" min="0" max="1" oninput="EMVIQ.highlightPeriodByIndex(this.value)">
         </div><br>
         <div class="emviqSearchBox">
-            <button type="button" class="atonBTN" style="background-color: rgba(100,0,0, 0.5);" onclick="EMVIQ.searchClear()">X</button>
+            <button type="button" class="atonBTN atonBTN-red" onclick="EMVIQ.searchClear()">X</button>
             <input id="idSearch" type="text" size="20" placeholder="Search...">
-            <div id="idSearchMatches" class="emviqSearchMatches"></div>
+            <button id="idSearchMatches" type="button" class="atonBTN" style="background-color: rgba(0,0,0, 0.5);" onclick="EMVIQ.popupMatches()"></button>
         </div>
     </div>
 
+    <!-- Main Popup -->
+    <div class="atonPopupContainer" style="display:none;" id="idPopup" onclick="EMVIQ.popupClose()"></div>
+
     <!-- Powered by -->
     <div class="atonToolbar atonToolbar-bottom poweredBy">
-        <!-- <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/emviq/" target="_blank">EMviq</a> -->
-        powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/" target="_blank">ATON</a> (CNR ISPC)
+        <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/emviq/" target="_blank">EMviq</a> - powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/" target="_blank">ATON</a> (CNR ISPC)
     </div>
 
     </div>

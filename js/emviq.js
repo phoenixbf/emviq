@@ -16,6 +16,8 @@ EMVIQ.project = undefined;
 EMVIQ.currPeriodName = undefined;
 EMVIQ.EM = new ATON.emviq.EM();
 
+EMVIQ.dmatches = []; // search descriptor matches
+
 EMVIQ._infotrans = undefined;
 EMVIQ._infotext  = undefined;
 
@@ -31,6 +33,8 @@ EMVIQ.setupPage = function(){
 
     $('#idSearch').focus(()=>{ ATON._bPauseDescriptorQuery = true; EMVIQ.switchInfoNode(false); });
     $('#idSearch').blur(()=>{ ATON._bPauseDescriptorQuery = false; });
+
+    $("#idSearchMatches").hide();
 };
 
 EMVIQ.toggleFullscreen = function(b){
@@ -89,6 +93,7 @@ EMVIQ.highlightProxies = function(idlist){
 EMVIQ.search = function(string){
     if (string.length < 2){
         EMVIQ.blurProxiesCurrPeriod();
+        $("#idSearchMatches").hide();
         return;
         }
 
@@ -96,7 +101,7 @@ EMVIQ.search = function(string){
 
     //console.log("Searching "+string);
 
-    let hProxies  = [];
+    EMVIQ.dmatches  = [];
     let bsProxies = new osg.BoundingSphere();
 
     for (let did in ATON.descriptors){
@@ -123,33 +128,100 @@ EMVIQ.search = function(string){
 
 
         if (bAdd){
-            hProxies.push(did);
+            EMVIQ.dmatches.push(did);
             bsProxies.expandByBoundingSphere( D.getBoundingSphere() );
             //console.log("MATCH "+did);
             }
         
         }
 
-    let len = hProxies.length;
+    let len = EMVIQ.dmatches.length;
     if (len > 0){
-        //console.log(hProxies);
+        //console.log(EMVIQ.dmatches);
         $("#idProxyID").html("");
 
-        EMVIQ.highlightProxies(hProxies);
-        ATON.requestPOVbyBound(bsProxies, 2.0, 1.0);
+        EMVIQ.highlightProxies(EMVIQ.dmatches);
+        ATON.requestPOVbyBound(bsProxies, 2.0, 0.5);
 
-        $("#idSearchMatches").html("<b>"+len+"</b> matches");
+        $("#idSearchMatches").html(len);
+        $("#idSearchMatches").show();
 
-        //if (ATON.descriptors[i].onSelect) ATON.descriptors[i].onSelect();  
-        //else ATON.requestPOVbyDescriptor(i, 0.5);
+        if (len === 1) EMVIQ.focusOnProxy(EMVIQ.dmatches[0]);
+        else EMVIQ.switchInfoNode(false);
         }
-    else EMVIQ.blurProxiesCurrPeriod();
+    else {
+        EMVIQ.blurProxiesCurrPeriod();
+        $("#idSearchMatches").hide();
+        EMVIQ.switchInfoNode(false);
+        }
 };
 
 EMVIQ.searchClear = function(){
     $('#idSearch').val('');
-    $("#idSearchMatches").html("");
+    $("#idSearchMatches").hide();
     ATON._bPauseDescriptorQuery = false;
+};
+
+EMVIQ.popupClose = function(){
+    $("#idPopup").hide();
+};
+
+/*
+EMVIQ.matchesRowFocusProxy = function(did){   
+    //EMVIQ.blurProxiesCurrPeriod();
+
+    let D = ATON.getDescriptor(did);
+    if (!D) return;
+
+    $('#idSearch').val('');
+    $("#idSearchMatches").hide();
+
+    EMVIQ.popupClose();
+
+    EMVIQ.highlightProxies([did]);
+    EMVIQ.switchInfoNode(false);
+    //EMVIQ.focusOnProxy(did);
+
+    ATON.requestPOVbyDescriptor(D);
+};
+*/
+
+EMVIQ.popupMatches = function(){
+    ATON._bPauseDescriptorQuery = true;
+
+    let num = EMVIQ.dmatches.length;
+    if (num <= 0) return;
+
+    let htmlcontent = "<div class='atonPopup' style='height: 400px !important;'>";
+    htmlcontent += "<h1>"+num+" Matches</h1>";
+    
+    htmlcontent += "<table>";
+    // Header
+    htmlcontent += "<thead><tr><th>Proxy ID</th><th>Time</th><th>Description</th><th>URL</th></tr></thead>";
+
+    htmlcontent += "<tbody>";
+
+    for (let d = 0; d < EMVIQ.dmatches.length; d++){
+        let did   = EMVIQ.dmatches[d];
+        let proxy = EMVIQ.EM.proxyNodes[did];
+
+        if (proxy){
+            htmlcontent += "<tr onclick=\"EMVIQ.focusOnProxy(\'"+did+"\')\">";
+            htmlcontent += "<td>"+did+"</td>";
+            htmlcontent += "<td>"+proxy.time.toFixed(2)+"</td>";
+            htmlcontent += "<td>"+proxy.description+"</td>";
+            if (proxy.url) htmlcontent += "<td>"+proxy.url+"</td>";
+            else htmlcontent += "<td>/</td>";
+            htmlcontent += "</tr>";
+            }
+        }
+
+    htmlcontent += "</tbody>";
+    htmlcontent += "</table>";
+    htmlcontent += "</div>";
+
+    $("#idPopup").html(htmlcontent);
+    $("#idPopup").show();
 };
 
 
@@ -174,11 +246,47 @@ EMVIQ.attachListeners = function(){
         else ATON._requestRetarget();
         });
 
+    ATON.clearEventHandlers("KeyPress");
     ATON.on("KeyPress",(k)=>{
         if (k === 'f'){
-            ATON._bPauseDescriptorQuery = !ATON._bPauseDescriptorQuery;
+            if (!ATON._bPauseDescriptorQuery){
+                if (ATON._hoveredDescriptor) EMVIQ.focusOnProxy(ATON._hoveredDescriptor);
+                }
+            else {
+                ATON._bPauseDescriptorQuery = false;
+                }
             }
         });
+};
+
+// Lock on proxy
+EMVIQ.focusOnProxy = function(d){
+    if (!d) return;
+
+    let D = undefined;
+    let did = undefined;
+
+    if (typeof d === 'string'){
+        D = ATON.getDescriptor(d);
+        did = d;
+        }
+    else {
+        D = d;
+        did = D.getUniqueID();
+        }
+
+    //ATON._hoveredDescriptor = D;
+
+    EMVIQ.highlightProxies([did]);
+    
+    EMVIQ.switchInfoNode(false);
+    //EMVIQ.switchInfoNode(true);
+    //EMVIQ.updateInfoNodeLocation(D.getBoundingSphere()._center);
+    //EMVIQ._infotext.setText(did);
+
+    ATON.requestPOVbyDescriptor(did, 0.5);
+    EMVIQ.updateProxyHTML(did);
+    ATON._bPauseDescriptorQuery = true;
 };
 
 EMVIQ.highlightPeriodByName = function(periodname){
@@ -222,6 +330,7 @@ EMVIQ.buildSpatialUI = function(){
     infoat.setAutoRotateToScreen(true);
     infoat.setAutoScaleToScreen(true);
 
+/*
     infoat.getOrCreateStateSet().setRenderingHint('TRANSPARENT_BIN');
     infoat.getOrCreateStateSet().setAttributeAndModes(
         new osg.BlendFunc(osg.BlendFunc.SRC_ALPHA, osg.BlendFunc.ONE_MINUS_SRC_ALPHA), 
@@ -233,6 +342,7 @@ EMVIQ.buildSpatialUI = function(){
         new osg.BlendFunc(osg.BlendFunc.SRC_ALPHA, osg.BlendFunc.ONE_MINUS_SRC_ALPHA), 
         osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE
         );
+*/
 
     let df = new osg.Depth( osg.Depth.ALWAYS );
     df.setRange(0.0,1.0);
@@ -272,6 +382,16 @@ EMVIQ.switchInfoNode = function(b){
 EMVIQ.updateInfoNodeLocation = function(p){
     let M = EMVIQ._infotrans.getMatrix();
     osg.mat4.setTranslation(M, p);
+};
+
+EMVIQ.updateProxyHTML = function(did){
+    let proxy = EMVIQ.EM.proxyNodes[did];
+    if (!proxy) return;
+
+    let content = "<span style='font-size:32px;'>"+did+"</span><br>";
+    if (proxy.description) content += proxy.description;
+
+    $("#idProxyID").html(content);
 };
 
 // Main update
@@ -349,14 +469,9 @@ window.addEventListener( 'load', ()=>{
         EMVIQ.switchInfoNode(true);
         EMVIQ._infotext.setText(hovD);
         
-        if (EMVIQ.EM.proxyNodes[hovD]){
-            let proxy = EMVIQ.EM.proxyNodes[hovD];
-            let content = "<div style='font-size: x-large;'>"+hovD+"</div><br>";
-            if (proxy.description) content += proxy.description;
-
-            $("#idProxyID").html(content);
-            }
+        if (EMVIQ.EM.proxyNodes[hovD]) EMVIQ.updateProxyHTML(hovD);
         });
+
     ATON.on("ShapeDescriptorLeft", ()=>{
         $("#idProxyID").html("");
         EMVIQ.switchInfoNode(false);

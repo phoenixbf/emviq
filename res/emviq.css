@@ -12,7 +12,7 @@
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 */
-    padding: 2px;
+    padding: 5px;
     margin: 1px;
 
     outline: none;
@@ -54,10 +54,25 @@
     padding: 5px;
 }
 
+/*
 .emviqSearchMatches {
-    margin: 10px;
-    display: inline;
+    margin: 0px;
+    padding: 5px;
+    display: inline-block;
+
+    cursor: pointer;
+    color: #FFF;
+
+    text-align: center;
+    vertical-align: middle;
+
+    width: 45px;
+    height: 45px;
+
+    background-color: black;
+    border-radius: 50%;
 }
+*/
 
 
 input[type=range]::-ms-thumb {
@@ -90,4 +105,55 @@ input[type=range]::-moz-range-thumb {
     border-radius: 6px;
     background: #ffffff;
     cursor: pointer;
+}
+
+
+table {
+    color: #FFF;
+    margin: 20px;
+
+    width: 100%;
+
+    margin-left:auto; 
+    margin-right:auto;
+
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+
+/*
+    border-collapse: collapse;
+    border: 1px solid white;
+*/
+}
+
+/*
+thead, tbody { 
+    display: inline-block;
+}
+*/
+
+th {
+    padding: 10px;
+    background-color: rgba(255,255,255, 0.2);
+}
+
+/*
+tbody {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 300px;
+}
+*/
+
+tr {
+    padding: 10px;
+    background-color: rgba(0,0,0, 0.2);
+    cursor: pointer;
+}
+
+tr:hover {
+    background-color: rgba(255,255,255, 0.2);
 }
