@@ -1,9 +1,6 @@
 .emviqLabel {
     border: 0px;
     display: inline-block;
-    cursor: pointer;
-
-    font-size: large;
 
     color: #FFF;
     text-shadow: 0 0 5px black;
@@ -15,7 +12,7 @@
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
 */
-    padding: 5px;
+    padding: 2px;
     margin: 1px;
 
     outline: none;

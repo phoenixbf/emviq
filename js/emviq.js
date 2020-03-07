@@ -351,7 +351,7 @@ window.addEventListener( 'load', ()=>{
         
         if (EMVIQ.EM.proxyNodes[hovD]){
             let proxy = EMVIQ.EM.proxyNodes[hovD];
-            let content = "<strong>"+hovD+"</strong><br>";
+            let content = "<div style='font-size: x-large;'>"+hovD+"</div><br>";
             if (proxy.description) content += proxy.description;
 
             $("#idProxyID").html(content);
