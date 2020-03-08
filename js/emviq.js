@@ -94,6 +94,7 @@ EMVIQ.search = function(string){
     if (string.length < 2){
         EMVIQ.blurProxiesCurrPeriod();
         $("#idSearchMatches").hide();
+        EMVIQ.switchInfoNode(false);
         return;
         }
 
@@ -130,6 +131,9 @@ EMVIQ.search = function(string){
         if (bAdd){
             EMVIQ.dmatches.push(did);
             bsProxies.expandByBoundingSphere( D.getBoundingSphere() );
+            
+            //TODO: switch on multiple periods? proxy.periodName
+            
             //console.log("MATCH "+did);
             }
         
@@ -263,6 +267,8 @@ EMVIQ.attachListeners = function(){
 EMVIQ.focusOnProxy = function(d){
     if (!d) return;
 
+    ATON._bPauseDescriptorQuery = true;
+
     let D = undefined;
     let did = undefined;
 
@@ -279,14 +285,13 @@ EMVIQ.focusOnProxy = function(d){
 
     EMVIQ.highlightProxies([did]);
     
-    EMVIQ.switchInfoNode(false);
-    //EMVIQ.switchInfoNode(true);
-    //EMVIQ.updateInfoNodeLocation(D.getBoundingSphere()._center);
-    //EMVIQ._infotext.setText(did);
+    //EMVIQ.switchInfoNode(false);
+    EMVIQ.switchInfoNode(true);
+    EMVIQ.updateInfoNodeLocation(D.getBoundingSphere()._center);
+    EMVIQ._infotext.setText(did);
 
     ATON.requestPOVbyDescriptor(did, 0.5);
     EMVIQ.updateProxyHTML(did);
-    ATON._bPauseDescriptorQuery = true;
 };
 
 EMVIQ.highlightPeriodByName = function(periodname){
@@ -295,13 +300,16 @@ EMVIQ.highlightPeriodByName = function(periodname){
     EMVIQ.currPeriodName = periodname;
 
     EMVIQ.EM.timeline.forEach(p => {
+        let rmGroup    = ATON.getNode(p.name);
+        let proxyGroup = ATON.getDescriptor(p.name);
+
         if (p.name === periodname){
-            ATON.getNode(p.name).switch(true);
-            ATON.getDescriptor(p.name).switch(true);
+            if (rmGroup) rmGroup.switch(true);
+            if (proxyGroup) proxyGroup.switch(true);
             }
         else {
-            ATON.getNode(p.name).switch(false);
-            ATON.getDescriptor(p.name).switch(false);
+            if (rmGroup) rmGroup.switch(false);
+            if (proxyGroup) proxyGroup.switch(false);
             }
         //console.log(p.name);
         });
@@ -394,10 +402,25 @@ EMVIQ.updateProxyHTML = function(did){
     $("#idProxyID").html(content);
 };
 
+// Call when all resources are loaded
+EMVIQ.validate = function(){
+    let invalidProxies = [];
+
+    for (d in ATON.descriptors){
+        if (ATON.descriptors[d].getBoundingSphere()._radius <= 0.0){
+            invalidProxies.push(d);
+            delete ATON.descriptors[d];
+            }
+        }
+
+    console.log("Invalid proxies: "+invalidProxies.length);
+};
+
+
 // Main update
 EMVIQ.update = function(){
     
-    if (ATON._pickedDescriptorData){
+    if (ATON._pickedDescriptorData && !ATON._bPauseDescriptorQuery){
         EMVIQ.updateInfoNodeLocation(ATON._pickedDescriptorData.p);
         }
 };
@@ -486,15 +509,14 @@ window.addEventListener( 'load', ()=>{
         $('#idLoader').hide();
         EMVIQ.attachListeners();
 
-        // Tweak
-        //for (d in ATON.descriptors){ if (ATON.descriptors[d].node) ATON.descriptors[d].node.setNodeMask(0x0);  }
-
         //ATON.isolateLayer("IIAD");
         EMVIQ.highlightPeriodByName("IIAD Rec");
 
         //console.log(ATON._groupDescriptors);
 
         //console.log(EMVIQ.EM.proxyNodes);
+
+        EMVIQ.validate();
         });
 
 });
