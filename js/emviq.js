@@ -21,6 +21,8 @@ EMVIQ.dmatches = []; // search descriptor matches
 EMVIQ._infotrans = undefined;
 EMVIQ._infotext  = undefined;
 
+EMVIQ._bPopup = false;
+
 
 EMVIQ.setupPage = function(){
     let elSearch = document.getElementById( "idSearch" );
@@ -31,8 +33,14 @@ EMVIQ.setupPage = function(){
         EMVIQ.search(string);
         });
 
-    $('#idSearch').focus(()=>{ ATON._bPauseDescriptorQuery = true; EMVIQ.switchInfoNode(false); });
-    $('#idSearch').blur(()=>{ ATON._bPauseDescriptorQuery = false; });
+    $('#idSearch').focus(()=>{ 
+        ATON._bPauseDescriptorQuery = true;
+        EMVIQ.switchInfoNode(false);
+        EMVIQ.popupClose();
+        });
+    $('#idSearch').blur(()=>{ 
+        if (!EMVIQ._bPopup) ATON._bPauseDescriptorQuery = false;
+        });
 
     $("#idSearchMatches").hide();
 };
@@ -168,35 +176,19 @@ EMVIQ.searchClear = function(){
 
 EMVIQ.popupClose = function(){
     $("#idPopup").hide();
+    EMVIQ._bPopup = false;
 };
-
-/*
-EMVIQ.matchesRowFocusProxy = function(did){   
-    //EMVIQ.blurProxiesCurrPeriod();
-
-    let D = ATON.getDescriptor(did);
-    if (!D) return;
-
-    $('#idSearch').val('');
-    $("#idSearchMatches").hide();
-
-    EMVIQ.popupClose();
-
-    EMVIQ.highlightProxies([did]);
-    EMVIQ.switchInfoNode(false);
-    //EMVIQ.focusOnProxy(did);
-
-    ATON.requestPOVbyDescriptor(D);
-};
-*/
 
 EMVIQ.popupMatches = function(){
+    if (EMVIQ._bPopup) return;
+
     ATON._bPauseDescriptorQuery = true;
+    EMVIQ._bPopup = true;
 
     let num = EMVIQ.dmatches.length;
     if (num <= 0) return;
 
-    let htmlcontent = "<div class='atonPopup' style='height: 400px !important;'>";
+    let htmlcontent = "<div class='atonPopup' style='height: 50% !important;'>";
     htmlcontent += "<h1>"+num+" Matches</h1>";
     
     htmlcontent += "<table>";
@@ -462,7 +454,12 @@ window.addEventListener( 'load', ()=>{
     df.setWriteMask(false); // important
     ATON._descrSS.setAttributeAndModes( df, osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE);
     ATON._descrSS.setTextureAttributeAndModes( 0, ATON.utils.fallbackAlphaTex, osg.StateAttribute.ON | osg.StateAttribute.OVERRIDE);
-
+/*
+    ATON._descrSS.setAttributeAndModes(
+        new osg.CullFace( 'DISABLE' ), //new osg.CullFace( 'BACK' ),
+        osg.StateAttribute.OVERRIDE
+        );
+*/
     EMVIQ.EM.folderProxies = EMVIQ.project+"/proxies/";
 
     EMVIQ.EM.parseGraphML(EMVIQ.project+"/em.graphml", ()=>{
