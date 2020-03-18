@@ -3,77 +3,77 @@
         "nodes":{
             "IIAD Rec":{
                 "urls": [
-                    "IIAD/Walls_BAKE_m.osgjs",
-                    "IIAD/Travi_BAKE_m.osgjs",
+                    "rm/IIAD/Walls_BAKE_m.osgjs",
+                    "rm/IIAD/Travi_BAKE_m.osgjs",
 
-                    "IIAD/Tetto1_BAKE_m.osgjs",
-                    "IIAD/Tetto_6_BAKE_m.osgjs",
-                    "IIAD/Tetto_5_BAKE_m.osgjs",
-                    "IIAD/Tetto_4_BAKE_m.osgjs",
-                    "IIAD/Tetto_3_BAKE_m.osgjs",
-                    "IIAD/Tetto_2_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto1_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto_6_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto_5_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto_4_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto_3_BAKE_m.osgjs",
+                    "rm/IIAD/Tetto_2_BAKE_m.osgjs",
 
-                    "IIAD/Terreno_interno_BAKE_m.osgjs",
+                    "rm/IIAD/Terreno_interno_BAKE_m.osgjs",
 
-                    "IIAD/Tempio_6_BAKE_m.osgjs",
-                    "IIAD/Tempio_5_BAKE_m.osgjs",
-                    "IIAD/Tempio_4_BAKE_m.osgjs",
-                    "IIAD/Tempio_3_BAKE_m.osgjs",
-                    "IIAD/Tempio_2_BAKE_m.osgjs",
-                    "IIAD/tempio_1_BAKE_m.osgjs",
+                    "rm/IIAD/Tempio_6_BAKE_m.osgjs",
+                    "rm/IIAD/Tempio_5_BAKE_m.osgjs",
+                    "rm/IIAD/Tempio_4_BAKE_m.osgjs",
+                    "rm/IIAD/Tempio_3_BAKE_m.osgjs",
+                    "rm/IIAD/Tempio_2_BAKE_m.osgjs",
+                    "rm/IIAD/tempio_1_BAKE_m.osgjs",
 
-                    "IIAD/Podio_2_BAKE_m.osgjs",
-                    "IIAD/Podio1_BAKE_m.osgjs",
+                    "rm/IIAD/Podio_2_BAKE_m.osgjs",
+                    "rm/IIAD/Podio1_BAKE_m.osgjs",
 
-                    "IIAD/Sottotetto_BAKE_m.osgjs",
+                    "rm/IIAD/Sottotetto_BAKE_m.osgjs",
 
-                    "IIAD/Scale_2_BAKE_m.osgjs",
-                    "IIAD/Scale_1_BAKE_m.osgjs",
+                    "rm/IIAD/Scale_2_BAKE_m.osgjs",
+                    "rm/IIAD/Scale_1_BAKE_m.osgjs",
 
-                    "IIAD/Porta2_BAKE_m.osgjs",
-                    "IIAD/Porta1_BAKE_m.osgjs",
+                    "rm/IIAD/Porta2_BAKE_m.osgjs",
+                    "rm/IIAD/Porta1_BAKE_m.osgjs",
 
-                    "IIAD/Pavimento_1_BAKE_m.osgjs",
+                    "rm/IIAD/Pavimento_1_BAKE_m.osgjs",
 
-                    "IIAD/Ingresso_3_BAKE_m.osgjs",
-                    "IIAD/Ingresso_2_BAKE_m.osgjs",
-                    "IIAD/Ingresso_1_BAKE_m.osgjs",
+                    "rm/IIAD/Ingresso_3_BAKE_m.osgjs",
+                    "rm/IIAD/Ingresso_2_BAKE_m.osgjs",
+                    "rm/IIAD/Ingresso_1_BAKE_m.osgjs",
 
-                    "IIAD/Cassettonato_BAKE_m.osgjs",
-                    "IIAD/Architrave_1_BAKE_m.osgjs"
+                    "rm/IIAD/Cassettonato_BAKE_m.osgjs",
+                    "rm/IIAD/Architrave_1_BAKE_m.osgjs"
                 ]
             },
             "IIAD_columns_A":{
-                "urls": "IIAD/Column_light_m.osgjs",
-                "transformfile":"IIAD/Column_light-inst.txt"
+                "urls": "rm/IIAD/Column_light_m.osgjs",
+                "transformfile":"rm/IIAD/Column_light-inst.txt"
             },
             "IIAD_columns_B":{
-                "urls": "IIAD/Column_shadow_m.osgjs",
-                "transformfile":"IIAD/Column_shadow-inst.txt"
+                "urls": "rm/IIAD/Column_shadow_m.osgjs",
+                "transformfile":"rm/IIAD/Column_shadow-inst.txt"
             },
             "IIAD_columns_C":{
-                "urls": "IIAD/Column_entrance_m.osgjs",
-                "transformfile":"IIAD/Column_entrance-inst.txt"
+                "urls": "rm/IIAD/Column_entrance_m.osgjs",
+                "transformfile":"rm/IIAD/Column_entrance-inst.txt"
             },
             "IIAD_columns_D":{
-                "urls": "IIAD/Column_tempio_m.osgjs",
-                "transformfile":"IIAD/Column_tempio-inst.txt"
+                "urls": "rm/IIAD/Column_tempio_m.osgjs",
+                "transformfile":"rm/IIAD/Column_tempio-inst.txt"
             },
 
             "XX sec":{
                 "urls":[
-                    "XXsec/LOD2_TM1.osgjs",
-                    "XXsec/LOD2_TM2.osgjs",
-                    "XXsec/LOD2_TM3.osgjs",
-                    "XXsec/LOD2_TM4.osgjs",
-                    "XXsec/LOD2_TM5.osgjs",
-                    "XXsec/LOD2_TM6.osgjs",
-                    "XXsec/LOD2_TM7.osgjs",
-                    "XXsec/LOD2_TM8.osgjs",
-                    "XXsec/LOD2_TM9.osgjs",
-                    "XXsec/LOD2_TM10.osgjs",
+                    "rm/XXsec/LOD2_TM1.osgjs",
+                    "rm/XXsec/LOD2_TM2.osgjs",
+                    "rm/XXsec/LOD2_TM3.osgjs",
+                    "rm/XXsec/LOD2_TM4.osgjs",
+                    "rm/XXsec/LOD2_TM5.osgjs",
+                    "rm/XXsec/LOD2_TM6.osgjs",
+                    "rm/XXsec/LOD2_TM7.osgjs",
+                    "rm/XXsec/LOD2_TM8.osgjs",
+                    "rm/XXsec/LOD2_TM9.osgjs",
+                    "rm/XXsec/LOD2_TM10.osgjs",
 
-                    "XXsec/GreatTemple_surroundings.osgjs"
+                    "rm/XXsec/GreatTemple_surroundings.osgjs"
                 ],
                 "transformstring": "-106.5 -290 5.0 0 0 -0.163"
             }
