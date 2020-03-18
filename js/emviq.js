@@ -23,6 +23,8 @@ EMVIQ._infotext  = undefined;
 
 EMVIQ._bPopup = false;
 
+EMVIQ.bShowAllProxies = false;
+
 
 EMVIQ.setupPage = function(){
     let elSearch = document.getElementById( "idSearch" );
@@ -63,7 +65,7 @@ EMVIQ.blurProxiesCurrPeriod = function(){
     for (let d = 0; d < numProxies; d++){
         let D = proxiesGroup.children[d];
 
-        D.setStateSet(undefined);
+        if (!EMVIQ.bShowAllProxies) D.setStateSet(undefined);
         }
 };
 
@@ -82,11 +84,14 @@ EMVIQ.highlightProxies = function(idlist){
         let did = D.getUniqueID();
 
         let proxy  = EMVIQ.EM.proxyNodes[did];
-        let texcol = ATON.emviq.nodeTexColors[proxy.type];
+        
+        let texcol    = ATON.emviq.nodeTexColors[proxy.type];
+        let texcoloff = ATON.emviq.nodeTexColorsOff[proxy.type];
         //if (!texcol) texcol = period.tex;
         //console.log(proxy.type);
 
-        D.setStateSet(undefined);
+        if (!EMVIQ.bShowAllProxies) D.setStateSet(undefined);
+        else D.getSS().setTextureAttributeAndModes( 0, texcoloff, osg.StateAttribute.ON | osg.StateAttribute.PROTECTED);
 
         for (let i = 0; i<numHL; i++){
             if (did === idlist[i]){
@@ -252,6 +257,10 @@ EMVIQ.attachListeners = function(){
                 ATON._bPauseDescriptorQuery = false;
                 }
             }
+
+        if (k === 'p'){
+            console.log(ATON._currPOV.pos, ATON._currPOV.target, ATON._currPOV.fov);
+            }
         });
 };
 
@@ -306,6 +315,7 @@ EMVIQ.highlightPeriodByName = function(periodname){
         //console.log(p.name);
         });
 
+    EMVIQ.highlightProxies([]);
     //console.log(ATON.getRootDescriptors());
 };
 
@@ -314,10 +324,26 @@ EMVIQ.highlightPeriodByIndex = function(i){
     let period = EMVIQ.EM.timeline[i];
     if (!period) return;
 
-    //$("#idTimeline").val(i);
+    $("#idTimeline").val(i);
 
     //EMVIQ.currPeriodIndex = i;
     EMVIQ.highlightPeriodByName(period.name);
+};
+
+EMVIQ.highlightFirstValidPeriod = function(){
+    for (let i = 0; i < EMVIQ.EM.timeline.length; i++) {
+        let period = EMVIQ.EM.timeline[i];
+        
+        let gPeriod = ATON.getNode(period.name);
+        if (gPeriod && gPeriod.getBoundingSphere()._radius > 0.0){
+            EMVIQ.highlightPeriodByIndex(i);
+            return;
+            }
+        }
+
+    console.log("NO VALID RMs");
+    EMVIQ.bShowAllProxies = true;
+    EMVIQ.highlightPeriodByIndex(0);
 };
 
 
@@ -435,15 +461,14 @@ window.addEventListener( 'load', ()=>{
 
     // Params
     if (ATON.utils.getURLparams().d) ATON.setDevicePixelRatio(ATON.utils.getURLparams().d);
-    if (ATON.utils.getURLparams().p) EMVIQ.project = EMVIQ.PROJECT_FOLDER + ATON.utils.getURLparams().p;
-    
+    if (ATON.utils.getURLparams().p) EMVIQ.project = EMVIQ.PROJECT_FOLDER + ATON.utils.getURLparams().p; 
 
     ATON._mainSS.getUniform('uFogDistance').setFloat( 150.0 );
     $('body').css('background-color', 'rgb(65,70,79)');
     ATON.setFogColor(osg.vec4.fromValues(0.25,0.27,0.3, 0.0));
 
     ATON._bQueryUseOcclusion = false;
-    ATON.setHome([-0.09,-27.80,-0.3],[0.07,-20.27,-0.3]);
+    //ATON.setHome([-0.09,-27.80,-0.3],[0.07,-20.27,-0.3]);
 
     EMVIQ.buildSpatialUI();
     ATON.addOnTickRoutine( EMVIQ.update );
@@ -507,7 +532,8 @@ window.addEventListener( 'load', ()=>{
         EMVIQ.attachListeners();
 
         //ATON.isolateLayer("IIAD");
-        EMVIQ.highlightPeriodByName("IIAD Rec");
+        //EMVIQ.highlightPeriodByName("IIAD Rec");
+        EMVIQ.highlightFirstValidPeriod();
 
         //console.log(ATON._groupDescriptors);
 
