@@ -443,6 +443,11 @@ EMVIQ.update = function(){
         }
 };
 
+EMVIQ.setBGcolor = function(col){
+    ATON.setFogColor(osg.vec4.fromValues(col[0],col[1],col[2], 0.0));
+    ATON.setMainPanoramaAsUniformColor(col);
+};
+
 
 // MAIN
 //===================================================
@@ -465,19 +470,12 @@ window.addEventListener( 'load', ()=>{
 
     ATON._mainSS.getUniform('uFogDistance').setFloat( 150.0 );
 
+    // BG color
     if (ATON.utils.getURLparams().bg){
-        let bgcol = ATON.utils.getURLparams().bg.split(",");
-        //let strcol = "rgb(";
-        //strcol += bgcol[0]*255.0+","+bgcol[1]*255.0+","+bgcol[2]*255.0+")";
-        //$('body').css('background-color', strcol);
-        //ATON.setFogColor(osg.vec4.fromValues(bgcol[0],bgcol[1],bgcol[2], 0.0));
-        ATON.setMainPanoramaAsUniformColor(bgcol);
+        let bgcol = ATON.utils.getURLparams().bg.split(",");        
+        EMVIQ.setBGcolor(bgcol);
         }
-    else {
-        //$('body').css('background-color', 'rgb(65,70,79)');
-        //ATON.setFogColor(osg.vec4.fromValues(0.25,0.27,0.3, 0.0));
-        ATON.setMainPanoramaAsUniformColor([0.25,0.27,0.3]);
-        }
+    else EMVIQ.setBGcolor([0.25,0.27,0.3]);
 
     ATON._bQueryUseOcclusion = false;
     //ATON.setHome([-0.09,-27.80,-0.3],[0.07,-20.27,-0.3]);
