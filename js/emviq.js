@@ -262,6 +262,21 @@ EMVIQ.attachListeners = function(){
             console.log(ATON._currPOV.pos, ATON._currPOV.target, ATON._currPOV.fov);
             }
         });
+
+    ATON.on("VRmode", function(v){
+        if (v){
+            $('#idTopNav').hide();
+            $('#idBottomNav').hide();
+            $('#idProxyID').hide();
+
+            EMVIQ.popupClose();
+            }
+        else {
+            $('#idTopNav').show();
+            $('#idBottomNav').show();
+            $('#idProxyID').show();
+            }
+        });
 };
 
 // Lock on proxy
@@ -335,7 +350,7 @@ EMVIQ.highlightFirstValidPeriod = function(){
         let period = EMVIQ.EM.timeline[i];
         
         let gPeriod = ATON.getNode(period.name);
-        if (gPeriod && gPeriod.getBoundingSphere()._radius > 0.0){
+        if (gPeriod && gPeriod.hasValidBounds()){
             EMVIQ.highlightPeriodByIndex(i);
             return;
             }
@@ -425,7 +440,7 @@ EMVIQ.validate = function(){
     let invalidProxies = [];
 
     for (d in ATON.descriptors){
-        if (ATON.descriptors[d].getBoundingSphere()._radius <= 0.0){
+        if ( !ATON.descriptors[d].hasValidBounds() ){
             invalidProxies.push(d);
             delete ATON.descriptors[d];
             }
@@ -446,6 +461,8 @@ EMVIQ.update = function(){
 EMVIQ.setBGcolor = function(col){
     ATON.setFogColor(osg.vec4.fromValues(col[0],col[1],col[2], 0.0));
     ATON.setMainPanoramaAsUniformColor(col);
+    let strcol = "rgb("+(col[0]*255.0)+","+(col[1]*255.0)+","+(col[2]*255.0)+")";
+    $('body').css('background-color', strcol);
 };
 
 
@@ -500,8 +517,9 @@ window.addEventListener( 'load', ()=>{
     EMVIQ.EM.parseGraphML(EMVIQ.project+"/em.graphml", ()=>{
         EMVIQ.EM.realizeFromJSONnode();
         
-        //EMVIQ.EM.buildEMgraph();
-        //EMVIQ.buildSG();
+        EMVIQ.EM.buildEMgraph();
+        EMVIQ.EM.buildContinuity();
+
         ATON.loadScene(EMVIQ.project+"/scene.json");
 
         document.getElementById("idTimeline").setAttribute("max", EMVIQ.EM.timeline.length-1);
