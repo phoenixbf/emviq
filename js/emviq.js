@@ -25,6 +25,8 @@ EMVIQ._bPopup = false;
 
 EMVIQ.bShowAllProxies = false;
 
+EMVIQ._invalidProxies = [];
+
 
 EMVIQ.setupPage = function(){
     let elSearch = document.getElementById( "idSearch" );
@@ -137,6 +139,7 @@ EMVIQ.search = function(string){
                 descrK = descrKeys[k].toLowerCase();
 
                 if (descrK.startsWith(string)) bAdd = true;
+                //if (descrK.match(string)) bAdd = true;
                 }
             }
 
@@ -437,16 +440,16 @@ EMVIQ.updateProxyHTML = function(did){
 
 // Call when all resources are loaded
 EMVIQ.validate = function(){
-    let invalidProxies = [];
+    EMVIQ._invalidProxies = [];
 
     for (d in ATON.descriptors){
         if ( !ATON.descriptors[d].hasValidBounds() ){
-            invalidProxies.push(d);
+            EMVIQ._invalidProxies.push(d);
             delete ATON.descriptors[d];
             }
         }
 
-    console.log("Invalid proxies: "+invalidProxies.length);
+    console.log("Invalid proxies: "+EMVIQ._invalidProxies.length);
 };
 
 
@@ -519,6 +522,7 @@ window.addEventListener( 'load', ()=>{
         
         EMVIQ.EM.buildEMgraph();
         EMVIQ.EM.buildContinuity();
+        EMVIQ.EM.buildRec();
 
         ATON.loadScene(EMVIQ.project+"/scene.json");
 
