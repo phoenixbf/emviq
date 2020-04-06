@@ -442,10 +442,15 @@ EMVIQ.updateProxyHTML = function(did){
 EMVIQ.validate = function(){
     EMVIQ._invalidProxies = [];
 
-    for (d in ATON.descriptors){
-        if ( !ATON.descriptors[d].hasValidBounds() ){
-            EMVIQ._invalidProxies.push(d);
-            delete ATON.descriptors[d];
+    for (d in EMVIQ.EM.EMnodes){
+        if (EMVIQ.EM.EMnodes[d]._EMdata){
+            let pname = EMVIQ.EM.EMnodes[d]._EMdata.label;
+            let D = ATON.descriptors[pname];
+
+            if ( D && !D.hasValidBounds() ){
+                EMVIQ._invalidProxies.push(pname);
+                delete D;
+                }
             }
         }
 
@@ -556,9 +561,6 @@ window.addEventListener( 'load', ()=>{
     ATON.on("AllNodeRequestsCompleted", ()=>{
         ATON.requestHome();
 
-        EMVIQ.EM.buildContinuity();
-        EMVIQ.EM.buildRec();
-
         // HTML stuff
         //EMVIQ.buildLayerMenu();
         $('#idLoader').hide();
@@ -573,6 +575,9 @@ window.addEventListener( 'load', ()=>{
         //console.log(EMVIQ.EM.proxyNodes);
 
         EMVIQ.validate();
+
+        EMVIQ.EM.buildContinuity();
+        EMVIQ.EM.buildRec();
         });
 
 });
