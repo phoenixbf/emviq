@@ -521,8 +521,6 @@ window.addEventListener( 'load', ()=>{
         EMVIQ.EM.realizeFromJSONnode();
         
         EMVIQ.EM.buildEMgraph();
-        EMVIQ.EM.buildContinuity();
-        EMVIQ.EM.buildRec();
 
         ATON.loadScene(EMVIQ.project+"/scene.json");
 
@@ -557,6 +555,9 @@ window.addEventListener( 'load', ()=>{
     // All complete 
     ATON.on("AllNodeRequestsCompleted", ()=>{
         ATON.requestHome();
+
+        EMVIQ.EM.buildContinuity();
+        EMVIQ.EM.buildRec();
 
         // HTML stuff
         //EMVIQ.buildLayerMenu();
