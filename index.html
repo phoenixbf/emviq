@@ -2,83 +2,67 @@
 <html lang="en">
 
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" href="/res/aton-logo.png" sizes="512x512" type="image/png">
 
-<title>EMviq based on ATON</title>
-<link rel="stylesheet" type="text/css" href="../../css/aton.css">
-<link rel="stylesheet" type="text/css" href="res/emviq.css">
+    <!-- Add iOS meta tags and icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="EMviq">
+    <link rel="apple-touch-icon" href="/res/aton-logo.png">
+    <meta name="description" content="EMviq">
+    <!-- Add meta theme-color -->
+    <meta name="theme-color" content="#000000" />
 
-<script type="text/javascript" src="../../vendors/gunzip.min.js"></script>
-<script type="text/javascript" src="../../vendors/jquery.min.js"></script>
-<script type="text/javascript" src="../../vendors/bluebird.min.js"></script>
-<script type="text/javascript" src="../../vendors/hammer.min.js"></script>
-<script type="text/javascript" src="../../vendors/screenfull.min.js"></script>
+    <title>EMviq</title>
+    <link rel="stylesheet" type="text/css" href="/res/css/aton.css">
+    <link rel="stylesheet" type="text/css" href="res/emviq.css">
 
-<script type="text/javascript" src="../../vendors/OSG.min.js"></script>
+    <!-- Vendors -->
+    <script type="text/javascript" src="/vendors/vendors.min.js"></script>
+    <script type="text/javascript" src="vendors/xml2json.min.js"></script>
 
-<script type="text/javascript" src="../../js/ATON.core.js"></script>
+    <script type="text/javascript" src="/dist/THREE.bundle.js"></script>
+    
+    <script type="module" src="/src/ATON.js"></script>
+    <script type="module" src="src/EMviq.js"></script>
 
-<!--  Collaborative services
-<script type="text/javascript" src="../services/node_modules/socket.io-client/dist/socket.io.js"></script>
-<script type="text/javascript" src="../js/ATON.vroadcast.js"></script>
+<!-- 
+    <script type="text/javascript" src="/dist/ATON.min.js"></script>
+    <script type="text/javascript" src="dist/EMviq.min.js"></script> 
+
 -->
-
-<!-- EMviq -->
-<script type="text/javascript" src="../../vendors/xml2json.min.js"></script>
-<script type="text/javascript" src="../../js/ATON.emviq.js"></script>
-
-<!--  EMviq FrontEnd -->
-<script type="text/javascript" src="js/emviq.js"></script>
 </head>
 
-
-<body oncontextmenu="return false;" style="background-color: rgba(255,255,255, 0);">
-
-	<!-- Our 3D View -->
-	<div id="ViewContainer" class="view3D">
-	    <canvas id="View" oncontextmenu="return false;"></canvas>
-	</div>
-
-    <!-- TOP navbar -->
-    <div id="idTopNav" class="atonToolbar" style="background-color: rgba(255,255,255, 0.0)">
-        <button id="idFS" type="button" class="atonBTN" onclick="EMVIQ.toggleFullscreen()"><img src="../../res/ii-inv-fs.png"></button>
-        <button type="button" class="atonBTN" onclick="ATON.requestHome(1.0)"><img src="../../res/ii-inv-home.png"></button>
-        <button id="idVR" type="button" class="atonBTN" onclick="ATON.toggleVR()"><img src="../../res/ii-inv-vr.png"></button>
-    </div>
+<body oncontextmenu="return false;">
+    <!-- Top Toolbar -->
+    <div id="idTopToolbar" class="atonToolbar atonToolbar-left" style="white-space:nowrap;"></div>
 
     <!-- Proxy highlighted -->
-    <div class="emviqProxyHighlight">
-        <div id="idProxyID" class="emviqLabel"></div>
-    </div>
+    <div class="emviqProxyHighlight"><div id="idProxyID" class="emviqLabel"></div></div>
 
-    <!-- BOTTOM navbar -->
+    <!-- Bottom Toolbar -->
     <div id="idBottomNav" class="atonToolbar atonToolbar-bottom" style="background-color: rgba(0,0,0, 0.0); margin-bottom: 15px;">
-        <div style="display:inline-block; width:80%;">
-            <h3 id="idPeriodName" class="emviqPeriod">Timeline</h3>
-            <input id="idTimeline" type="range" min="0" max="1" oninput="EMVIQ.highlightPeriodByIndex(this.value)">
-        </div><br>
+        <div id="idTimelineContainer" style="display:inline-block; width:80%"></div><br>
+
         <div class="emviqSearchBox">
-            <button type="button" class="atonBTN atonBTN-red" onclick="EMVIQ.searchClear()"><img src="../../res/ii-inv-search-clear.png"></button>
+            <button type="button" class="atonBTN atonBTN-red" onclick="EMVIQ.searchClear()"><img src="/res/icons/search-clear.png"></button>
             <input id="idSearch" type="text" size="20" placeholder="Search...">
             <button id="idSearchMatches" type="button" class="atonBTN" style="background-color: rgba(0,0,0, 0.5);" onclick="EMVIQ.popupMatches()"></button>
         </div>
     </div>
 
     <!-- Main Popup -->
-    <div class="atonPopupContainer" style="display:none;" id="idPopup" onclick="EMVIQ.popupClose()"></div>
-
-    <!-- Powered by -->
-    <div class="atonToolbar atonToolbar-bottom poweredBy">
-        <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/emviq/" target="_blank">EMviq</a> - powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/" target="_blank">ATON</a> (CNR ISPC)
-    </div>
-
-    </div>
+    <div id="idPopup" class="atonPopupContainer" style="display:none;"></div>
 
     <!-- Loader -->
-	<div class="atonCenterLoader" style="display:none;" id="idLoader"><img src="../../res/loader.png"></div>
+    <div id="idLoader" class="atonCenterLoader" style="display:none;"></div>
 
+    <!-- Powered by -->
+    <div id='idPoweredBy' class="atonToolbar atonToolbar-bottom poweredBy" >
+        Powered by <a href="http://osiris.itabc.cnr.it/scenebaker/index.php/projects/aton/" target="_blank">ATON</a>
+    </div>
 </body>
-</html>
