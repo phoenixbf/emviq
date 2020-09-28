@@ -137,6 +137,7 @@ EMVIQ.run = ()=>{
 
 // HTML UI
 EMVIQ.setupUI = ()=>{
+    ATON.FE.uiAddButtonFullScreen("idTopToolbar");
 	ATON.FE.uiAddButtonHome("idTopToolbar");
     ATON.FE.uiAddButtonQR("idTopToolbar");
 
@@ -161,6 +162,7 @@ EMVIQ.setupSearchUI = function(){
 
     $('#idSearch').on('keyup', ()=>{
         let string = $('#idSearch').val();
+        //ATON.SUI.infoNode.visible = false;
         EMVIQ.search(string);
     });
 
@@ -259,24 +261,18 @@ EMVIQ.highlightFirstValidPeriod = ()=>{
 
 
 EMVIQ.highlightProxies = function(idlist){
-    let proxiesGroup = ATON.getSemanticNode(EMVIQ.currPeriodName);
-    if (!proxiesGroup) return;
-
-    let numProxies = proxiesGroup.children.length;
     let numHL = idlist.length;
 
-    for (let d = 0; d < numProxies; d++){
-        let D = proxiesGroup.children[d];
-        let did = D.nid;
+    for (let d in EMVIQ.currEM.proxyNodes){
+        let proxy = EMVIQ.currEM.proxyNodes[d];
+        let did = proxy.nid;
 
-        let proxy = EMVIQ.currEM.proxyNodes[did];
-
-        if (!EMVIQ.bShowAllProxies) D.restoreDefaultMaterial();
+        if (!EMVIQ.bShowAllProxies) proxy.restoreDefaultMaterial();
         //D.hide();
 
         for (let i = 0; i<numHL; i++){
             if (did === idlist[i]){
-                D.highlight();
+                proxy.highlight();
                 //D.show();
                 //console.log("xxx");
             } 
