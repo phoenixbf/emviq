@@ -70,8 +70,12 @@ EMVIQ.buildColorPalette = ()=>{
                 color: EMVIQ.colors[i], 
                 transparent: true,
                 depthWrite: false, 
-                opacity: 0.2,
-                flatShading: true
+                opacity: 0.0, //0.2,
+                flatShading: true,
+                //polygonOffset: true,
+                //polygonOffsetFactor: -1,
+                //polygonOffsetUnits: 1,
+                //renderOrder: 2
             })
         );
 
@@ -80,8 +84,12 @@ EMVIQ.buildColorPalette = ()=>{
                 color: EMVIQ.colors[i], 
                 transparent: true,
                 depthWrite: false, 
-                opacity: 0.5,
-                flatShading: true
+                opacity: 0.4,
+                flatShading: true,
+                //polygonOffset: true,
+                //polygonOffsetFactor: -1,
+                //polygonOffsetUnits: 1,
+                //renderOrder: 2
             })
         );
     }
@@ -138,7 +146,7 @@ EMVIQ.run = ()=>{
 // HTML UI
 EMVIQ.setupUI = ()=>{
     ATON.FE.uiAddButtonFullScreen("idTopToolbar");
-	ATON.FE.uiAddButtonHome("idTopToolbar");
+	ATON.FE.uiAddButtonHome("idBottomIcons");
     ATON.FE.uiAddButtonQR("idTopToolbar");
 
     ATON.FE.uiAddButtonVR("idTopToolbar"); // VR button will show up only on secure connections (required)
