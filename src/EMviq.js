@@ -61,11 +61,11 @@ EMVIQ.buildColorPalette = ()=>{
     EMVIQ.colors.push( gcol ); // USVS
     EMVIQ.colors.push( new THREE.Color(0.799, 0.753, 0.347) ); // SF
 
-    EMVIQ.materials   = [];
-    EMVIQ.materialsHL = [];
+    EMVIQ.matProxyOFF = [];
+    EMVIQ.matProxyON  = [];
 
     for (let i in EMVIQ.colors){
-        EMVIQ.materials.push(
+        EMVIQ.matProxyOFF.push(
             new THREE.MeshStandardMaterial({
                 color: EMVIQ.colors[i], 
                 transparent: true,
@@ -79,7 +79,7 @@ EMVIQ.buildColorPalette = ()=>{
             })
         );
 
-        EMVIQ.materialsHL.push(
+        EMVIQ.matProxyON.push(
             new THREE.MeshStandardMaterial({
                 color: EMVIQ.colors[i], 
                 transparent: true,
@@ -93,8 +93,13 @@ EMVIQ.buildColorPalette = ()=>{
             })
         );
     }
+};
 
-
+EMVIQ.setProxiesOpacity = (f)=>{
+    for (let m in EMVIQ.matProxyOFF){
+        EMVIQ.matProxyOFF[m].opacity = f;
+        EMVIQ.matProxyON[m].opacity  = (f+0.1);
+    }
 };
 
 
@@ -108,7 +113,7 @@ EMVIQ.init = ()=>{
     //EMVIQ.paramEdit  = ATON.FE.urlParams.get('edit');
 
     EMVIQ.currPeriodName  = undefined;
-    EMVIQ.bShowAllProxies = false;
+    EMVIQ._bShowAllProxies = false;
 
 
     EMVIQ.buildColorPalette();
@@ -147,6 +152,7 @@ EMVIQ.run = ()=>{
 EMVIQ.setupUI = ()=>{
     ATON.FE.uiAddButtonFullScreen("idTopToolbar");
 	ATON.FE.uiAddButtonHome("idBottomIcons");
+    ATON.FE.uiAddButton("idTopToolbar","settings", EMVIQ.popupSettings);
     ATON.FE.uiAddButtonQR("idTopToolbar");
 
     ATON.FE.uiAddButtonVR("idTopToolbar"); // VR button will show up only on secure connections (required)
@@ -229,10 +235,20 @@ EMVIQ.setupEventHandlers = ()=>{
     //ATON.clearEventHandlers("SemanticNodeHover");
     ATON.on("SemanticNodeHover", (semid)=>{
         EMVIQ.updateQueriedProxyInfo(semid);
+
+        if (EMVIQ._bShowAllProxies) return;
+
+        let S = ATON.getSemanticNode(semid);
+        if (S) S.highlight();
         //ATON.FE.auLib.switch.play();
     });
     ATON.on("SemanticNodeLeave", (semid)=>{
         $("#idProxyID").html("");
+
+        if (EMVIQ._bShowAllProxies) return;
+
+        let S = ATON.getSemanticNode(semid);
+        if (S) S.restoreDefaultMaterial();
     });
 
     ATON.on("AllNodeRequestsCompleted",()=>{
@@ -263,9 +279,22 @@ EMVIQ.highlightFirstValidPeriod = ()=>{
     }
 
     console.log("NO VALID RMs");
-    EMVIQ.bShowAllProxies = true;
+    EMVIQ.showAllProxies(true);
     EMVIQ.filterByPeriodIndex(0);
 };
+
+EMVIQ.showAllProxies = (b)=>{
+    EMVIQ._bShowAllProxies = b;
+
+    for (let d in EMVIQ.currEM.proxyNodes){
+        let proxy = EMVIQ.currEM.proxyNodes[d];
+        if (b){
+            proxy.show();
+            proxy.highlight();
+        }
+        else proxy.restoreDefaultMaterial();
+    }
+}
 
 
 EMVIQ.highlightProxies = function(idlist){
@@ -275,7 +304,7 @@ EMVIQ.highlightProxies = function(idlist){
         let proxy = EMVIQ.currEM.proxyNodes[d];
         let did = proxy.nid;
 
-        if (!EMVIQ.bShowAllProxies) proxy.restoreDefaultMaterial();
+        if (!EMVIQ._bShowAllProxies) proxy.restoreDefaultMaterial();
         //D.hide();
 
         for (let i = 0; i<numHL; i++){
@@ -308,7 +337,7 @@ EMVIQ.filterByPeriodName = function(periodname){
         //console.log(p.name);
     });
 
-    if (!EMVIQ.bShowAllProxies){
+    if (!EMVIQ._bShowAllProxies){
         for (let p in EMVIQ.currEM.proxyNodes){
             let P = EMVIQ.currEM.proxyNodes[p];
             let EMdata = P.userData.EM;
@@ -343,7 +372,7 @@ EMVIQ.blurProxiesCurrPeriod = function(){
     for (let d = 0; d < numProxies; d++){
         let D = proxiesGroup.children[d];
 
-        if (!EMVIQ.bShowAllProxies) D.restoreDefaultMaterial();
+        if (!EMVIQ._bShowAllProxies) D.restoreDefaultMaterial();
     }
 };
 
@@ -453,12 +482,33 @@ EMVIQ.searchClear = function(){
     ATON._bPauseQuery = false;
 };
 
-// TODO:
+// Settings popup
 EMVIQ.popupSettings = ()=>{
     let htmlcontent = "<h1>Settings</h1>";
-    //htmlcontent += ;
+    htmlcontent += "<div class='atonBlockGroup'><h2>Proxies settings</h2>";
+    htmlcontent += "<input id='idConfigOcclusion' type='checkbox'><label for='idConfigOcclusion'>Query occlusion</label>";
+    htmlcontent += "<input id='idConfigShowAllProxies' type='checkbox'><label for='idConfigShowAllProxies'>Show all</label>";
+    htmlcontent += "<input id='idProxiesOpacity' type='range' min='0' max='1' step='0.1' ><label for='idProxiesOpacity'>Proxies opacity</label>";
+    htmlcontent += "</div>";
 
     if ( !ATON.FE.popupShow(htmlcontent) ) return;
+
+    $("#idConfigOcclusion").prop('checked', ATON._bQuerySemOcclusion);
+    $("#idConfigShowAllProxies").prop('checked', EMVIQ._bShowAllProxies);
+
+    $("#idConfigOcclusion").on("change", ()=>{
+        ATON._bQuerySemOcclusion = $("#idConfigOcclusion").is(":checked");
+    });
+    $("#idConfigShowAllProxies").on("change",()=>{
+        let b = $("#idConfigShowAllProxies").is(":checked");
+        EMVIQ.showAllProxies(b);
+    });
+    $("#idProxiesOpacity").on("change", ()=>{
+        let f = parseFloat( $("#idProxiesOpacity").val() );
+        EMVIQ.setProxiesOpacity(f);
+    });
+
+    
 };
 
 EMVIQ.popupMatches = ()=>{

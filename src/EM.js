@@ -219,31 +219,31 @@ buildTimeline(tablenode){
 
     //console.log(tablenode);
 
-    var yStart = parseFloat(this.getAttribute(g, "y"));
+    let yStart = parseFloat(this.getAttribute(g, "y"));
     //console.log(yStart);
 
-    var nodelabels = tablenode.NodeLabel;
+    let nodelabels = tablenode.NodeLabel;
     if (!nodelabels) return;
 
-    var TL = {}; // timeline
+    let TL = {}; // timeline
     this.timeline = []; // clear main timeline
 
     for (let i = 0; i < nodelabels.length; i++){
-        var L = nodelabels[i];
+        let L = nodelabels[i];
         
-        var pstr = L.toString().trim(); // period string
+        let pstr = L.toString().trim(); // period string
         //console.log(pstr);
 
-        var strID = undefined;
+        let strID = undefined;
         if (i>0) strID = "row_"+(i-1); // First nodelabel is header row
         //if (L.ModelParameter && L.ModelParameter.RowNodeLabelModelParameter) strID = ;
 
-        var tMid = parseFloat(this.getAttribute(L, "y"));
+        let tMid = parseFloat(this.getAttribute(L, "y"));
         tMid += (0.5 * parseFloat(this.getAttribute(L, "width")) ); // "width" instead of "height" because label is rotated 90.deg
 
-        var tColor =  this.getAttribute(L,"backgroundColor");
+        let pColorHex =  this.getAttribute(L,"backgroundColor");
 
-        // FIXME: if (tColor) tColor = ATON.utils.hexToRGBlin(tColor);
+        // FIXME: if (tColor) tColor = ATON.utils.hexToRGBlin(pColorHex);
         //console.log(tColor);
 
         if (strID){
@@ -252,11 +252,7 @@ buildTimeline(tablenode){
             TL[strID].min   = tMid + yStart;
             TL[strID].max   = tMid + yStart;
 
-            //FIXME: 
-            //if (tColor){
-            //    TL[strID].color = [tColor[0], tColor[1], tColor[2], 0.5];
-            //    TL[strID].tex   = ATON.utils.createFillTexture( TL[strID].color );
-            //}
+            if (pColorHex) TL[strID].color = new THREE.Color( pColorHex );
         }
     }
 
@@ -283,7 +279,9 @@ buildTimeline(tablenode){
 
             // Add to main timeline
             //this.timeline.push(TL[rID]);
-            this.timeline.push( new Period(TL[rID].name, TL[rID].min, TL[rID].max) );
+            this.timeline.push( 
+                new Period(TL[rID].name).setMin(TL[rID].min).setMax(TL[rID].max).setColor(TL[rID].color)
+            );
         }
     }
 
@@ -291,10 +289,10 @@ buildTimeline(tablenode){
     this.timeline.sort( EMUtils.comparePeriod );
 
     this.timeline.forEach( p => {
-        //ATON.createSceneNode(p.name).attachToRoot();
-        ATON.createSemanticNode(p.name).attachToRoot();
+        let pGroup = ATON.createSemanticNode(p.name);
+        pGroup.attachToRoot();
 
-        // FIXME: if (p.color) ATON.getDescriptor(p.name).setBaseColor(p.color);
+        EMUtils.getOrCreateEMData(pGroup).pcolor = p.color;
         });
 
     console.log(this.timeline);
@@ -383,8 +381,8 @@ realizeProxyGraphFromJSONNode(graphnode){
                     //console.log(fields.label);
 
                     let semNode = ATON.createSemanticNode(fields.label).load(this.pathproxies+fields.label+".gltf");                    
-                    semNode.setDefaultAndHighlightMaterials( EMVIQ.materials[type], EMVIQ.materialsHL[type] );
-                    semNode.setMaterial(EMVIQ.materials[type]);
+                    semNode.setDefaultAndHighlightMaterials( EMVIQ.matProxyOFF[type], EMVIQ.matProxyON[type] );
+                    semNode.setMaterial(EMVIQ.matProxyOFF[type]);
                     semNode.attachTo(periodName);
 
                     // Store inside SemNode

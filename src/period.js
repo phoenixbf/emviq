@@ -22,6 +22,8 @@ constructor(name, min,max){
     // Range
     this.setMin(min);
     this.setMax(max);
+
+    this.color = undefined;
 }
 
 setMin(f){
@@ -34,6 +36,11 @@ setMax(f){
     if (this.min !== undefined && f !== undefined && f <= this.min) return this; // invalid max
     this.max = f;
 
+    return this;
+}
+
+setColor(c){
+    this.color = c;
     return this;
 }
 
