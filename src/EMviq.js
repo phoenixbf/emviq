@@ -507,10 +507,16 @@ EMVIQ.searchClear = function(){
 // Settings popup
 EMVIQ.popupSettings = ()=>{
     let htmlcontent = "<h1>Settings</h1>";
-    htmlcontent += "<div class='atonBlockGroup'><h2>Proxies settings</h2>";
-    htmlcontent += "<input id='idConfigOcclusion' type='checkbox'><label for='idConfigOcclusion'>Query occlusion</label>";
-    htmlcontent += "<input id='idConfigProxiesAlwaysVis' type='checkbox'><label for='idConfigProxiesAlwaysVis'>Always visible</label>";
-    htmlcontent += "<input id='idConfigShowAllProxies' type='checkbox'><label for='idConfigShowAllProxies'>Show all</label>";
+    htmlcontent += "<div class='atonBlockGroup' style='text-align:left'><h2>Proxies</h2>";
+    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigOcclusion' type='checkbox'><b>Occlusion</b>";
+    htmlcontent += "<br>Uses visible 3D representations to occlude queries on proxies</div><br>";
+
+    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigProxiesAlwaysVis' type='checkbox'><b>Always visible</b>";
+    htmlcontent += "<br>Proxies are always visible on top of visible 3D representation models</div><br>";
+
+    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigShowAllProxies' type='checkbox'><b>Show All</b>";
+    htmlcontent += "<br>Show all proxies</div><br>";
+
     //htmlcontent += "<input id='idProxiesOpacity' type='range' min='0' max='1' step='0.1' ><label for='idProxiesOpacity'>Proxies opacity</label>";
     htmlcontent += "</div>";
 
