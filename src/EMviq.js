@@ -72,6 +72,7 @@ EMVIQ.buildColorPalette = ()=>{
                 depthWrite: false, 
                 opacity: 0.0, //0.2,
                 flatShading: true,
+                depthTest: true
                 //polygonOffset: true,
                 //polygonOffsetFactor: -1,
                 //polygonOffsetUnits: 1,
@@ -86,6 +87,7 @@ EMVIQ.buildColorPalette = ()=>{
                 depthWrite: false, 
                 opacity: 0.4,
                 flatShading: true,
+                depthTest: true
                 //polygonOffset: true,
                 //polygonOffsetFactor: -1,
                 //polygonOffsetUnits: 1,
@@ -99,6 +101,15 @@ EMVIQ.setProxiesOpacity = (f)=>{
     for (let m in EMVIQ.matProxyOFF){
         EMVIQ.matProxyOFF[m].opacity = f;
         EMVIQ.matProxyON[m].opacity  = (f+0.1);
+    }
+};
+
+EMVIQ.setProxiesAlwaysVisible = (b)=>{
+    EMVIQ._bProxiesAlwaysVis = b;
+
+    for (let m in EMVIQ.matProxyOFF){
+        EMVIQ.matProxyOFF[m].depthTest = !b;
+        EMVIQ.matProxyON[m].depthTest  = !b;
     }
 };
 
@@ -365,6 +376,15 @@ EMVIQ.filterByPeriodIndex = function(i){
 };
 
 EMVIQ.blurProxiesCurrPeriod = function(){
+
+    for (let p in EMVIQ.currEM.proxyNodes){
+        let proxy = EMVIQ.currEM.proxyNodes[p];
+        let EMdata = proxy.userData.EM;
+
+        if (EMdata.periods[EMVIQ.currPeriodName] !== undefined) proxy.restoreDefaultMaterial();
+    }
+
+/*
     let proxiesGroup = ATON.getSemanticNode(EMVIQ.currPeriodName);
     if (!proxiesGroup) return;
 
@@ -374,6 +394,7 @@ EMVIQ.blurProxiesCurrPeriod = function(){
 
         if (!EMVIQ._bShowAllProxies) D.restoreDefaultMaterial();
     }
+*/
 };
 
 EMVIQ.updateQueriedProxyInfo = function(did){
@@ -480,6 +501,7 @@ EMVIQ.searchClear = function(){
     $("#idSearchMatches").hide();
     
     ATON._bPauseQuery = false;
+    EMVIQ.blurProxiesCurrPeriod();
 };
 
 // Settings popup
@@ -487,14 +509,16 @@ EMVIQ.popupSettings = ()=>{
     let htmlcontent = "<h1>Settings</h1>";
     htmlcontent += "<div class='atonBlockGroup'><h2>Proxies settings</h2>";
     htmlcontent += "<input id='idConfigOcclusion' type='checkbox'><label for='idConfigOcclusion'>Query occlusion</label>";
+    htmlcontent += "<input id='idConfigProxiesAlwaysVis' type='checkbox'><label for='idConfigProxiesAlwaysVis'>Always visible</label>";
     htmlcontent += "<input id='idConfigShowAllProxies' type='checkbox'><label for='idConfigShowAllProxies'>Show all</label>";
-    htmlcontent += "<input id='idProxiesOpacity' type='range' min='0' max='1' step='0.1' ><label for='idProxiesOpacity'>Proxies opacity</label>";
+    //htmlcontent += "<input id='idProxiesOpacity' type='range' min='0' max='1' step='0.1' ><label for='idProxiesOpacity'>Proxies opacity</label>";
     htmlcontent += "</div>";
 
     if ( !ATON.FE.popupShow(htmlcontent) ) return;
 
     $("#idConfigOcclusion").prop('checked', ATON._bQuerySemOcclusion);
     $("#idConfigShowAllProxies").prop('checked', EMVIQ._bShowAllProxies);
+    $("#idConfigProxiesAlwaysVis").prop('checked', EMVIQ._bProxiesAlwaysVis);
 
     $("#idConfigOcclusion").on("change", ()=>{
         ATON._bQuerySemOcclusion = $("#idConfigOcclusion").is(":checked");
@@ -503,6 +527,11 @@ EMVIQ.popupSettings = ()=>{
         let b = $("#idConfigShowAllProxies").is(":checked");
         EMVIQ.showAllProxies(b);
     });
+    $("#idConfigProxiesAlwaysVis").on("change",()=>{
+        let b = $("#idConfigProxiesAlwaysVis").is(":checked");
+        EMVIQ.setProxiesAlwaysVisible(b);
+    });
+
     $("#idProxiesOpacity").on("change", ()=>{
         let f = parseFloat( $("#idProxiesOpacity").val() );
         EMVIQ.setProxiesOpacity(f);
