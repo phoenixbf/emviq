@@ -115,6 +115,7 @@ EMVIQ.setProxiesAlwaysVisible = (b)=>{
 
 
 EMVIQ.init = ()=>{
+
     // Realize the base front-end
     ATON.FE.realize();
 
@@ -506,7 +507,7 @@ EMVIQ.searchClear = function(){
 
 // Settings popup
 EMVIQ.popupSettings = ()=>{
-    let htmlcontent = "<h1>Settings</h1>";
+    let htmlcontent = "<div class='atonPopupTitle'>Settings</div>";
     htmlcontent += "<div class='atonBlockGroup' style='text-align:left'><h2>Proxies</h2>";
     htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigOcclusion' type='checkbox'><b>Occlusion</b>";
     htmlcontent += "<br>Uses visible 3D representations to occlude queries on proxies</div><br>";
@@ -551,7 +552,7 @@ EMVIQ.popupMatches = ()=>{
     if (num <= 0) return;
 
     let htmlcontent = "<div style='height: 50% !important;'>";
-    htmlcontent += "<h1>"+num+" Matches</h1>";
+    htmlcontent += "<div class='atonPopupTitle'>"+num+" Matches</div>";
     
     htmlcontent += "<table>";
     // Header
