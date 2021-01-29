@@ -221,6 +221,8 @@ EMVIQ.setupSUI = ()=>{
 
         alignContent: 'left', // could be 'center' or 'left'
         justifyContent: 'center', // could be 'center' or 'start'
+
+        interLine: 0.003
     });
 
     EMVIQ.suiDescBlock.position.set(0,-0.05, 0);
