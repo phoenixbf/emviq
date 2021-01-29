@@ -19,15 +19,22 @@
 }
 
 .emviqPeriod {
+    display: inline-block;
     font-size: large;
+
+    /*padding: 10px;*/
 
     color: #FFF;
     text-shadow: 0 0 15px black;
     
     text-align: center;
-    vertical-align: middle; 
-    
-    margin-bottom: -2px;
+    vertical-align: middle;
+/*
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+*/  
+    margin-bottom: -5px;
+    pointer-events: none;
 }
 
 .emviqProxyHighlight {

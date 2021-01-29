@@ -167,11 +167,11 @@ EMVIQ.setupUI = ()=>{
     ATON.FE.uiAddButton("idTopToolbar","settings", EMVIQ.popupSettings);
     ATON.FE.uiAddButtonQR("idTopToolbar");
 
-    ATON.FE.uiAddButtonVR("idTopToolbar"); // VR button will show up only on secure connections (required)
-    ATON.FE.uiAddButtonDeviceOrientation("idTopToolbar");
+    //ATON.FE.uiAddButtonVR("idTopToolbar"); // VR button will show up only on secure connections (required)
+    //ATON.FE.uiAddButtonDeviceOrientation("idTopToolbar");
 
 
-    let htmlTimeline = "<h3 id='idPeriodName' class='emviqPeriod'>Timeline</h3>";
+    let htmlTimeline = "<h3 id='idPeriodName' class='emviqPeriod'>Timeline</h3><br>";
     htmlTimeline += "<input id='idTimeline' type='range' min='0' max='1' >";
     $("#idTimelineContainer").html(htmlTimeline);
     $("#idTimeline").on("input change",()=>{
@@ -192,12 +192,14 @@ EMVIQ.setupSearchUI = function(){
         EMVIQ.search(string);
     });
 
-    $('#idSearch').focus(()=>{ 
+    $('#idSearch').focus(()=>{
+        ATON._bListenKeyboardEvents = false;
         ATON._bPauseQuery = true;
         ATON.SUI.infoNode.visible = false;
         //ATON.FE.popupClose();
         });
-    $('#idSearch').blur(()=>{ 
+    $('#idSearch').blur(()=>{
+        ATON._bListenKeyboardEvents = true;
         if (ATON.FE._bPopup) ATON._bPauseQuery = false;
     });
 
@@ -274,6 +276,7 @@ EMVIQ.setupEventHandlers = ()=>{
 
     ATON.on("XRmode", (b)=>{
         EMVIQ.suiDescBlock.visible = b;
+        if (b) ATON.FE.popupClose();
     });
 
     ATON.on("KeyPress",(k)=>{
@@ -510,20 +513,29 @@ EMVIQ.searchClear = function(){
 // Settings popup
 EMVIQ.popupSettings = ()=>{
     let htmlcontent = "<div class='atonPopupTitle'>Settings</div>";
-    htmlcontent += "<div class='atonBlockGroup' style='text-align:left'><h2>Proxies</h2>";
-    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigOcclusion' type='checkbox'><b>Occlusion</b>";
-    htmlcontent += "<br>Uses visible 3D representations to occlude queries on proxies</div><br>";
+    let blblock = "<div style='max-width:300px; display:inline-block; margin:5px; vertical-align:top;'>";
 
-    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigProxiesAlwaysVis' type='checkbox'><b>Always visible</b>";
-    htmlcontent += "<br>Proxies are always visible on top of visible 3D representation models</div><br>";
+    //htmlcontent += "<div class='atonBlockGroup'><h3>Navigation</h3>";
+    htmlcontent += "<div id='idNavModes'></div><br>";
 
-    htmlcontent += "<div style='white-space: nowrap;'><input id='idConfigShowAllProxies' type='checkbox'><b>Show All</b>";
+    htmlcontent += "<div class='atonBlockGroup' style='text-align:left;'><h3>Proxies</h3>";
+    htmlcontent += blblock+"<input id='idConfigOcclusion' type='checkbox'><b>Occlusion</b>"; // <div style='white-space: nowrap;'>
+    htmlcontent += "<br>Uses visible 3D representations to occlude queries on proxies</div>";
+
+    htmlcontent += blblock+"<input id='idConfigProxiesAlwaysVis' type='checkbox'><b>Always visible</b>";
+    htmlcontent += "<br>Proxies are always visible on top of visible 3D representation models</div>";
+
+    htmlcontent += blblock+"<input id='idConfigShowAllProxies' type='checkbox'><b>Show All</b>";
     htmlcontent += "<br>Show all proxies</div><br>";
 
     //htmlcontent += "<input id='idProxiesOpacity' type='range' min='0' max='1' step='0.1' ><label for='idProxiesOpacity'>Proxies opacity</label>";
     htmlcontent += "</div>";
 
     if ( !ATON.FE.popupShow(htmlcontent) ) return;
+
+    ATON.FE.uiAddButtonFirstPerson("idNavModes");
+    ATON.FE.uiAddButtonDeviceOrientation("idNavModes");
+    ATON.FE.uiAddButtonVR("idNavModes");
 
     $("#idConfigOcclusion").prop('checked', ATON._bQuerySemOcclusion);
     $("#idConfigShowAllProxies").prop('checked', EMVIQ._bShowAllProxies);
