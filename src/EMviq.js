@@ -71,8 +71,9 @@ EMVIQ.buildColorPalette = ()=>{
                 transparent: true,
                 depthWrite: false, 
                 opacity: 0.0, //0.2,
-                flatShading: true,
-                depthTest: true
+                //flatShading: true,
+                depthTest: true,
+                //side: THREE.DoubleSide
                 //polygonOffset: true,
                 //polygonOffsetFactor: -1,
                 //polygonOffsetUnits: 1,
@@ -86,8 +87,9 @@ EMVIQ.buildColorPalette = ()=>{
                 transparent: true,
                 depthWrite: false, 
                 opacity: 0.4,
-                flatShading: true,
-                depthTest: true
+                //flatShading: true,
+                depthTest: true,
+                //side: THREE.DoubleSide
                 //polygonOffset: true,
                 //polygonOffsetFactor: -1,
                 //polygonOffsetUnits: 1,
