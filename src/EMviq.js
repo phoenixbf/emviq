@@ -141,24 +141,40 @@ EMVIQ.init = ()=>{
 };
 
 EMVIQ.run = ()=>{
-    if (EMVIQ.paramSID === undefined) return;
+    if (EMVIQ.paramSID === undefined || EMVIQ.paramSID === null) return;
 
     // Load scene
     ATON.FE.loadSceneID(EMVIQ.paramSID);
 
-    EMVIQ.currEM = new EMVIQ.EM(ATON.PATH_SCENES+EMVIQ.paramSID);
+    // Load EM
+    EMVIQ.loadEM( ATON.PATH_SCENES + EMVIQ.paramSID );
+};
+
+EMVIQ.loadEM = (url, bReload)=>{
+    ATON._rootSem.removeChildren();
+
+    EMVIQ.currEM = new EMVIQ.EM(url);
     EMVIQ.currEM.parseGraphML(()=>{
         EMVIQ.currEM.realizeProxyGraphFromJSONNode();
         EMVIQ.currEM.buildEMgraph();
 
-        document.getElementById("idTimeline").setAttribute("max", EMVIQ.currEM.timeline.length-1);
+        //document.getElementById("idTimeline").setAttribute("max", EMVIQ.currEM.timeline.length-1);
+        EMVIQ.buildTimelineUI();
 
         //EMVIQ.currPeriodName = EMVIQ.currEM.timeline[0].name;
         //console.log(EMVIQ.currPeriodName);
+
+        if (bReload){
+            EMVIQ.currEM.buildContinuity();
+            EMVIQ.currEM.buildRec();
+
+            //let i = $("#idTimeline").val();
+            //EMVIQ.filterByPeriodIndex( i );
+
+            EMVIQ.filterByPeriodIndex(EMVIQ.currPeriodIndex);
+            EMVIQ.uiSetPeriodIndex(EMVIQ.currPeriodIndex);
+        }
     });
-
-    //ATON.Nav.setFirstPersonControl();
-
 };
 
 
@@ -166,13 +182,17 @@ EMVIQ.run = ()=>{
 EMVIQ.setupUI = ()=>{
     ATON.FE.uiAddButtonFullScreen("idTopToolbar");
 	ATON.FE.uiAddButtonHome("idBottomIcons");
-    ATON.FE.uiAddButton("idTopToolbar","settings", EMVIQ.popupSettings);
+    ATON.FE.uiAddButton("idTopToolbar","settings", EMVIQ.popupSettings, "EMviq Settings");
+    ATON.FE.uiAddButton("idTopToolbar","res/em.png", ()=>{
+        EMVIQ.loadEM( ATON.PATH_SCENES + EMVIQ.paramSID, true );
+    }, "Reload Extended Matrix");
+
     ATON.FE.uiAddButtonQR("idTopToolbar");
 
     //ATON.FE.uiAddButtonVR("idTopToolbar"); // VR button will show up only on secure connections (required)
     //ATON.FE.uiAddButtonDeviceOrientation("idTopToolbar");
 
-
+/*
     let htmlTimeline = "<h3 id='idPeriodName' class='emviqPeriod'>Timeline</h3><br>";
     htmlTimeline += "<input id='idTimeline' type='range' min='0' max='1' >";
     $("#idTimelineContainer").html(htmlTimeline);
@@ -180,8 +200,37 @@ EMVIQ.setupUI = ()=>{
         let i = $("#idTimeline").val();
         EMVIQ.filterByPeriodIndex( i );
     });
-
+*/
     EMVIQ.setupSearchUI();
+};
+
+EMVIQ.uiSetPeriodIndex = (i)=>{
+    $("#tp"+i).siblings().removeClass('emviqPeriodSelected');
+    $("#tp"+i).addClass("emviqPeriodSelected");
+};
+
+EMVIQ.buildTimelineUI = ()=>{
+    let htmlcontent = "";
+    for (let i=0; i<EMVIQ.currEM.timeline.length; i++){
+        let tp = EMVIQ.currEM.timeline[i];
+
+        let st = undefined;
+        if (tp.color) st = "background-color:rgba("+(tp.color.r*255)+", "+(tp.color.g*255)+", "+(tp.color.b*255)+", 0.4)";
+        
+        if (st) htmlcontent += "<div class='emviqPeriodSelector' style='"+st+"' id='tp"+i+"'>"+tp.name+"</div>";
+        else htmlcontent += "<div class='emviqPeriodSelector' id='tp"+i+"'>"+tp.name+"</div>";
+    }
+
+    $("#idTL").html(htmlcontent);
+
+    for (let i=0; i<EMVIQ.currEM.timeline.length; i++){
+        let tp = EMVIQ.currEM.timeline[i];
+        $("#tp"+i).click(()=>{
+            EMVIQ.filterByPeriodIndex(i);
+            EMVIQ.uiSetPeriodIndex(i);
+        });
+    }
+    
 };
 
 EMVIQ.setupSearchUI = function(){
@@ -282,8 +331,14 @@ EMVIQ.setupEventHandlers = ()=>{
     });
 
     ATON.on("KeyPress",(k)=>{
-        if (k === "x") EMVIQ.popupTest();
+        //if (k === 'x') EMVIQ.popupTest();
+        if (k === 'm') EMVIQ.measure();
     });
+};
+
+EMVIQ.measure = ()=>{
+    let P = ATON.getSceneQueriedPoint();
+    let M = ATON.SUI.addMeasurementPoint( P );
 };
 
 EMVIQ.highlightFirstValidPeriod = ()=>{
@@ -293,6 +348,7 @@ EMVIQ.highlightFirstValidPeriod = ()=>{
         let gPeriod = ATON.getSceneNode(period.name);
         if (gPeriod /*&& gPeriod.hasValidBounds()*/){
             EMVIQ.filterByPeriodIndex(i);
+            EMVIQ.uiSetPeriodIndex(i);
             return;
         }
     }
@@ -300,6 +356,7 @@ EMVIQ.highlightFirstValidPeriod = ()=>{
     console.log("NO VALID RMs");
     EMVIQ.showAllProxies(true);
     EMVIQ.filterByPeriodIndex(0);
+    EMVIQ.uiSetPeriodIndex(0);
 };
 
 EMVIQ.showAllProxies = (b)=>{
@@ -377,9 +434,9 @@ EMVIQ.filterByPeriodIndex = function(i){
     let period = EMVIQ.currEM.timeline[i];
     if (!period) return;
 
-    $("#idTimeline").val(i);
+    //$("#idTimeline").val(i);
 
-    //EMVIQ.currPeriodIndex = i;
+    EMVIQ.currPeriodIndex = i;
     EMVIQ.filterByPeriodName(period.name);
 };
 
