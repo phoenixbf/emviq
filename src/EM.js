@@ -471,6 +471,15 @@ realizeProxyGraphFromJSONNode(graphnode){
     //return G;
 }
 
+getSourceGraphByProxyID(id){
+    for (let i in this.EMnodes){
+        let xn = this.EMnodes[i];
+        if (xn.label === id) return xn; 
+    }
+
+    return undefined;
+};
+
 // Build EM nodes relationships
 buildEMgraph(graphnode){
     if (!graphnode) graphnode = this._mainGMLRoot;
@@ -495,6 +504,8 @@ buildEMgraph(graphnode){
             //console.log(sourceID+" > "+targetID);
             }
         }
+
+    //console.log(this.EMnodes);
 }
 
 // Check

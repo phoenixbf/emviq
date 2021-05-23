@@ -307,7 +307,6 @@ EMVIQ.setupEventHandlers = ()=>{
 
         let S = ATON.getSemanticNode(semid);
         if (S) S.highlight();
-        //ATON.FE.auLib.switch.play();
     });
     ATON.on("SemanticNodeLeave", (semid)=>{
         $("#idProxyID").html("");
@@ -323,6 +322,8 @@ EMVIQ.setupEventHandlers = ()=>{
 
         EMVIQ.currEM.buildContinuity();
         EMVIQ.currEM.buildRec();
+
+        ATON.SUI.setSelectorRadius(0.1);
     });
 
     ATON.on("XRmode", (b)=>{
@@ -475,6 +476,11 @@ EMVIQ.updateQueriedProxyInfo = function(did){
     //content += "<br><i>";
     //for (let p in EMdata.periods) content += p+"<br>";
     //content += "</i>";
+
+    // Retrieve root of source-graphs
+    const emn = EMVIQ.currEM.getSourceGraphByProxyID(did);
+    // TODO: render!
+    //console.log( emn );
 
     $("#idProxyID").html(content);
 

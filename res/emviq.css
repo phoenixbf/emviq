@@ -42,7 +42,7 @@
     display: block;
     margin: auto;
 
-    padding: 5px;
+    padding: 10px;
 
     overflow-x: auto;
     overflow-y: hidden;
@@ -55,12 +55,18 @@
     border-top: 5px solid white !important;
 
     opacity: 1 !important;
-    box-shadow: 0 0px 10px rgba(0,0,0, 0.5) !important;
+    box-shadow: 0 0px 10px rgba(0,0,0, 0.7) !important;
+    /*font-size: larger !important;*/
+
+    filter: none !important;
+    -webkit-filter: none !important;
 }
 
 .emviqPeriodSelector {
     color: #FFF;
     text-shadow: 0 0 10px black;
+
+    border-top: 1px solid white;
 
     font-size: small;
     font-weight: bold;
@@ -68,14 +74,14 @@
 
     border-radius: 2px;
 
-    padding: 0.5em;
-    padding-left: 1em;
-    padding-right: 1em;
+    padding: 0.7em;
+    padding-left: 1.1em;
+    padding-right: 1.1em;
 
     margin: 0px;
 
-    min-height: 30px;
-    line-height: 30px;
+    min-height: 20px;
+    line-height: 20px;
     
     text-align: center;
     vertical-align: middle;
@@ -93,11 +99,18 @@
     user-select: none;
 
     opacity: 0.5;
+/*
+    filter: blur(2px);
+    -webkit-filter: blur(2px);
+*/
 }
 
 .emviqPeriodSelector:hover {
     /*box-shadow: 0 0px 10px rgba(255, 255, 255, 1.0);*/
     opacity: 1;
+
+    filter: none;
+    -webkit-filter: none;
 }
 
 .emviqProxyHighlight {
@@ -121,7 +134,7 @@
  
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    padding: 5px;
+    padding: 1px;
 }
 
 /*
