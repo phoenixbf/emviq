@@ -480,7 +480,7 @@ EMVIQ.updateQueriedProxyInfo = function(did){
     // Retrieve root of source-graphs
     const emn = EMVIQ.currEM.getSourceGraphByProxyID(did);
     // TODO: render!
-    //console.log( emn );
+    console.log( emn );
 
     $("#idProxyID").html(content);
 
