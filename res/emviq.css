@@ -13,7 +13,7 @@
     border-radius: 5px;
 */
     padding: 5px;
-    margin: 1px;
+    margin: 0px;
 
     outline: none;
 }
@@ -89,6 +89,7 @@
     vertical-align: middle;
 
     background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
     
     cursor: pointer;
 
@@ -100,19 +101,15 @@
     -o-user-select: none;
     user-select: none;
 
-    backdrop-filter: blur(6px);
-    opacity: 0.5;
+    transition: all .1s ease-in-out;
 }
 
 .emviqPeriodSelector:hover {
     /*box-shadow: 0 0px 10px rgba(255, 255, 255, 1.0);*/
-    opacity: 1;
+    /*opacity: 1;*/
 
-    /*
-    filter: none;
-    -webkit-filter: none;
-    */
-    backdrop-filter: blur(6px);
+    border-top: 5px solid white !important;
+    transform: scale(1.1);
 }
 
 .emviqProxyHighlight {

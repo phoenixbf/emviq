@@ -470,7 +470,7 @@ EMVIQ.updateQueriedProxyInfo = function(did){
 
     // HTML UI
     let EMdata = proxy.userData.EM;
-    let content = "<span style='font-size:32px;'>"+did+"</span><br><br>";
+    let content = "<span style='font-size:32px;'>"+did+"</span><br>";
     if (EMdata.description) content += EMdata.description;
     
     //content += "<br><i>";
