@@ -171,8 +171,9 @@ EMVIQ.loadEM = (url, bReload)=>{
             //let i = $("#idTimeline").val();
             //EMVIQ.filterByPeriodIndex( i );
 
-            EMVIQ.filterByPeriodIndex(EMVIQ.currPeriodIndex);
-            EMVIQ.uiSetPeriodIndex(EMVIQ.currPeriodIndex);
+            //EMVIQ.filterByPeriodIndex(EMVIQ.currPeriodIndex);
+            //EMVIQ.uiSetPeriodIndex(EMVIQ.currPeriodIndex);
+            EMVIQ.goToPeriod(EMVIQ.currPeriodIndex);
         }
     });
 };
@@ -212,7 +213,7 @@ EMVIQ.uiSetPeriodIndex = (i)=>{
 EMVIQ.buildTimelineUI = ()=>{
     let htmlcontent = "";
 
-    let suiToolbar = [];
+    EMVIQ.suiPeriodsBTNs = [];
 
     for (let i=0; i<EMVIQ.currEM.timeline.length; i++){
         let tp = EMVIQ.currEM.timeline[i];
@@ -223,10 +224,12 @@ EMVIQ.buildTimelineUI = ()=>{
         if (st) htmlcontent += "<div class='emviqPeriodSelector' style='"+st+"' id='tp"+i+"'>"+tp.name+"</div>";
         else htmlcontent += "<div class='emviqPeriodSelector' id='tp"+i+"'>"+tp.name+"</div>";
 
-        let suiBTN = new ATON.SUI.Button("sui_"+tp.name, 4.0, 1.0);
+        // SUI
+        let suiBTN = new ATON.SUI.Button("sui_"+tp.name, 3.0, 1.5);
         suiBTN.onSelect = ()=>{
-            EMVIQ.filterByPeriodIndex(i);
-            EMVIQ.uiSetPeriodIndex(i);
+            //EMVIQ.filterByPeriodIndex(i);
+            //EMVIQ.uiSetPeriodIndex(i);
+            EMVIQ.goToPeriod(i);
         };
 
         suiBTN.setPosition(0, i*0.35, 0);
@@ -235,17 +238,24 @@ EMVIQ.buildTimelineUI = ()=>{
         suiBTN.setText(tp.name);
 
         if (tp.color) suiBTN.setBaseColor(tp.color);
+        suiBTN.setBackgroundOpacity(0.3);
         
-        suiToolbar.push(suiBTN);
+        EMVIQ.suiPeriodsBTNs.push(suiBTN);
     }
 
-    if (suiToolbar.length>0){
+    let numPeriods = EMVIQ.suiPeriodsBTNs.length;
+
+    if (numPeriods > 0){
         const pi2 = (Math.PI * 0.5);
 
-        EMVIQ.suiTimeline = ATON.createUINode();
-        EMVIQ.suiTimeline.setPosition(-0.1,0,0.1).setRotation(-pi2,-pi2,pi2).setScale(0.2);
+        EMVIQ.suiTimeline.removeChildren();
+        
+        EMVIQ.suiTimeline
+            .setPosition(-0.1, 0, 0.1)
+            .setRotation(-pi2,-pi2,pi2)
+            .setScale(0.1);
 
-        for (let i=0; i<suiToolbar.length; i++) suiToolbar[i].attachTo(EMVIQ.suiTimeline);
+        for (let i=0; i<numPeriods; i++) EMVIQ.suiPeriodsBTNs[i].attachTo(EMVIQ.suiTimeline);
     
         EMVIQ.suiTimeline.attachToRoot();
         EMVIQ.suiTimeline.hide();
@@ -264,8 +274,9 @@ EMVIQ.buildTimelineUI = ()=>{
     for (let i=0; i<EMVIQ.currEM.timeline.length; i++){
         let tp = EMVIQ.currEM.timeline[i];
         $("#tp"+i).click(()=>{
-            EMVIQ.filterByPeriodIndex(i);
-            EMVIQ.uiSetPeriodIndex(i);
+            //EMVIQ.filterByPeriodIndex(i);
+            //EMVIQ.uiSetPeriodIndex(i);
+            EMVIQ.goToPeriod(i);
         });
     }
     
@@ -328,6 +339,9 @@ EMVIQ.setupSUI = ()=>{
     ATON.SUI.infoNode.add(EMVIQ.suiDescBlock);
     EMVIQ.suiDescBlock.visible = false;
 
+    EMVIQ.suiTimeline = ATON.createUINode();
+    EMVIQ.suiPeriodsBTNs = [];
+
     //if (ATON.Utils.isMobile() && !ATON.XR.isPresenting()) ATON.SUI.bShowInfo = false;
 };
 
@@ -375,6 +389,8 @@ EMVIQ.setupEventHandlers = ()=>{
             ATON.XR.controller1.add( EMVIQ.suiTimeline );
             EMVIQ.suiTimeline.show();
         }
+
+        ThreeMeshUI.update();
     });
 
     ATON.on("KeyPress",(k)=>{
@@ -394,16 +410,19 @@ EMVIQ.highlightFirstValidPeriod = ()=>{
         
         let gPeriod = ATON.getSceneNode(period.name);
         if (gPeriod /*&& gPeriod.hasValidBounds()*/){
-            EMVIQ.filterByPeriodIndex(i);
-            EMVIQ.uiSetPeriodIndex(i);
+            //EMVIQ.filterByPeriodIndex(i);
+            //EMVIQ.uiSetPeriodIndex(i);
+            EMVIQ.goToPeriod(i);
             return;
         }
     }
 
     console.log("NO VALID RMs");
     EMVIQ.showAllProxies(true);
-    EMVIQ.filterByPeriodIndex(0);
-    EMVIQ.uiSetPeriodIndex(0);
+
+    //EMVIQ.filterByPeriodIndex(0);
+    //EMVIQ.uiSetPeriodIndex(0);
+    EMVIQ.goToPeriod(0);
 };
 
 EMVIQ.showAllProxies = (b)=>{
@@ -485,6 +504,20 @@ EMVIQ.filterByPeriodIndex = function(i){
 
     EMVIQ.currPeriodIndex = i;
     EMVIQ.filterByPeriodName(period.name);
+};
+
+EMVIQ.goToPeriod = (i)=>{
+    EMVIQ.filterByPeriodIndex(i);
+    EMVIQ.uiSetPeriodIndex(i);
+
+    if (EMVIQ.suiTimeline){
+        for (let k=0; k<EMVIQ.suiPeriodsBTNs.length; k++){
+            let B = EMVIQ.suiPeriodsBTNs[k];
+
+            if (k===i) B.setBackgroundOpacity(0.9);
+            else B.setBackgroundOpacity(0.3);
+        }
+    }
 };
 
 EMVIQ.blurProxiesCurrPeriod = function(){
