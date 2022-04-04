@@ -1,0 +1,13 @@
+{
+	"name": "EMviq",
+	"background_color": "#FFFFFF",
+	"display": "fullscreen",
+	"scope": "/",
+	"icons": [
+	    {
+	    "src": "appicon.png",
+	    "sizes": "256x256",
+	    "type": "image/png"
+	    }
+	]
+}
