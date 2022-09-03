@@ -548,26 +548,46 @@ EMVIQ.updateQueriedProxyInfo = function(did){
     if (!proxy) return;
 
     // HTML UI
-    let EMdata = proxy.userData.EM;
+    let EMdata = proxy.userData.EM;    
     let content = "<span style='font-size:32px;'>"+did+"</span><br>";
-    if (EMdata.description) content += EMdata.description;
+    //let content =   "<details><summary>"+content1+"</summary></details>"; 
+    if(EMdata.description) content += EMdata.description+"</br>";
+    // add url content
+    if(EMdata.url) content += "<a href="+EMdata.url+">Source<a/><br>";
     
-    //content += "<br><i>";
-    //for (let p in EMdata.periods) content += p+"<br>";
-    //content += "</i>";
-
+    //content += "<br>";
+    for (let p in EMdata.periods) content += p+"<br>";    
+    
     // Retrieve root of source-graphs
     const emn = EMVIQ.currEM.getSourceGraphByProxyID(did);
     // TODO: render!
     console.log( emn );
-
-    $("#idProxyID").html(content);
+    
+    // Function recursive on the children's node
+    function visitSourceGraph(x){
+     if (x.children.lenght<1)
+         return;
+     else  {
+                  
+         x.children.forEach(e => {
+               
+            console.log(e.label)
+            visitSourceGraph(e)                       
+             
+        });     
+     };
+    };
+    
+	visitSourceGraph(emn)       
+      
+   
+   $("#idProxyID").html(content);
 
     // SUI
     EMVIQ.suiDescText.set({ content: EMdata.description });
 };
 
-
+    
 // Search
 EMVIQ.search = function(string){
     if (string.length < 2){
