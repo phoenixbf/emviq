@@ -394,6 +394,10 @@ EMVIQ.setupEventHandlers = ()=>{
         ATON.SUI.setSelectorRadius(0.1);
     });
 
+    ATON.on("MouseRightButton",()=>{
+        ATON._bPauseQuery = !ATON._bPauseQuery;
+    });
+
     ATON.on("XRmode", (b)=>{
         EMVIQ.suiDescBlock.visible = b;
         if (b) ATON.FE.popupClose();
