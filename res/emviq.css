@@ -158,6 +158,9 @@
 
 .emviqSG {
     margin-top: 4px;
+    max-width: 300px;
+
+    overflow-y: auto;
 }
 
 .emviqSGEntry {
@@ -169,12 +172,15 @@
 .emviqSNTitle {
     background-color: rgba(0,0,0, 1);
     border-radius: 5px;
+    padding: 2px;
 }
 
 .emviqSNTitle img {
     width: 40px;
     height: auto;
+
     vertical-align: middle;
+    margin-right: 2px;
 }
 
 
