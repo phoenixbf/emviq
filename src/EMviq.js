@@ -44,6 +44,22 @@ EMVIQ.NODETYPES = {
     CONTINUITY:9
 };
 
+EMVIQ.getIconURLbyType = (type)=>{
+    if (type === EMVIQ.NODETYPES.SERIATION) return "res/emicons/SUseries.png";
+    if (type === EMVIQ.NODETYPES.US) return "res/emicons/US.png";
+    if (type === EMVIQ.NODETYPES.USVS) return "res/emicons/USVs.png";
+    if (type === EMVIQ.NODETYPES.USVN) return "res/emicons/USVn.png";
+    if (type === EMVIQ.NODETYPES.SPECIALFIND) return "res/emicons/SF.png";
+
+    if (type === EMVIQ.NODETYPES.COMBINER) return "res/emicons/combiner.png";
+    if (type === EMVIQ.NODETYPES.EXTRACTOR) return "res/emicons/extractor.png";
+    if (type === EMVIQ.NODETYPES.DOCUMENT) return "res/emicons/document.png";
+    if (type === EMVIQ.NODETYPES.PROPERTY) return "res/emicons/property.png";
+    if (type === EMVIQ.NODETYPES.CONTINUITY) return "res/emicons/continuity.png";
+
+    return "";
+};
+
 EMVIQ.x2js = new X2JS({attributePrefix:"@"});
 
 EMVIQ.buildColorPalette = ()=>{
@@ -396,6 +412,8 @@ EMVIQ.setupEventHandlers = ()=>{
     ATON.on("KeyPress",(k)=>{
         //if (k === 'x') EMVIQ.popupTest();
         if (k === 'm') EMVIQ.measure();
+
+        if (k === 'x') ATON._bPauseQuery = !ATON._bPauseQuery;
     });
 };
 
@@ -542,44 +560,47 @@ EMVIQ.blurProxiesCurrPeriod = function(){
 */
 };
 
+EMVIQ.getSourceGraphHTML = (emn)=>{
+    if (emn.children.lenght<1) return "";
+
+    let html = "";
+
+    for (let e in emn.children){
+        let E = emn.children[e];
+
+        //console.log(E)
+
+        // Entry title
+        html += "<details class='emviqSGEntry'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
+
+        // Show here entry attributes
+        if (E.description) html += E.description + "<br>";
+        if (E.url) html += E.url + "<br>";
+
+        // Recurse
+        html += EMVIQ.getSourceGraphHTML(E);
+        html += "</details>";
+    };
+
+    return html;
+};
+
 EMVIQ.updateQueriedProxyInfo = function(did){
     // First check if it's a EM proxy
     let proxy = EMVIQ.currEM.proxyNodes[did];
     if (!proxy) return;
 
     // HTML UI
-    let EMdata = proxy.userData.EM;    
+    let EMdata = proxy.userData.EM;   
     let content = "<span style='font-size:32px;'>"+did+"</span><br>";
-    //let content =   "<details><summary>"+content1+"</summary></details>"; 
-    if(EMdata.description) content += EMdata.description+"</br>";
-    // add url content
-    if(EMdata.url) content += "<a href="+EMdata.url+">Source<a/><br>";
     
-    //content += "<br>";
-    for (let p in EMdata.periods) content += p+"<br>";    
-    
+    if (EMdata.description) content += EMdata.description+"</br>";
+    content += "<img style='width:100px;height:auto' src='"+EMVIQ.getIconURLbyType(EMdata.type)+"'></img><br>";
+
     // Retrieve root of source-graphs
     const emn = EMVIQ.currEM.getSourceGraphByProxyID(did);
-    // TODO: render!
-    console.log( emn );
-    
-    // Function recursive on the children's node
-    function visitSourceGraph(x){
-     if (x.children.lenght<1)
-         return;
-     else  {
-                  
-         x.children.forEach(e => {
-               
-            console.log(e.label)
-            visitSourceGraph(e)                       
-             
-        });     
-     };
-    };
-    
-	visitSourceGraph(emn)       
-      
+
+    content += "<div class='emviqSG'>"+EMVIQ.getSourceGraphHTML(emn)+"</div>";  
    
    $("#idProxyID").html(content);
 

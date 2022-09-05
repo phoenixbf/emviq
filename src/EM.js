@@ -497,6 +497,8 @@ buildEMgraph(graphnode){
             let sourceNode = this.EMnodes[sourceID];
             let targetNode = this.EMnodes[targetID];
 
+            //TODO: filter by dashed
+
             if (sourceNode !== undefined && targetNode !== undefined){
                 sourceNode.addChild(targetNode);
                 //if (sourceNode._EMdata.type === ATON.emviq.NODETYPES.CONTINUITY) console.log(sourceNode._EMdata);

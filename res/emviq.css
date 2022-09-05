@@ -156,6 +156,27 @@
 }
 */
 
+.emviqSG {
+    margin-top: 4px;
+}
+
+.emviqSGEntry {
+    text-align: left;
+    margin-left: 10px;
+    background-color: rgba(0,0,0, 0.2);
+}
+
+.emviqSNTitle {
+    background-color: rgba(0,0,0, 1);
+    border-radius: 5px;
+}
+
+.emviqSNTitle img {
+    width: 40px;
+    height: auto;
+    vertical-align: middle;
+}
+
 
 input[type=range]::-ms-thumb {
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
