@@ -1,3 +1,14 @@
+.emviqDocImg {
+  position: relative;
+  
+  transform: scale(1);
+  transition: transform .5s;
+}
+
+.emviqDocImg:hover {
+  transform: scale(1.5);
+}
+
 .emviqLabel {
     border: 0px;
     display: inline-block;

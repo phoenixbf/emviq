@@ -566,17 +566,18 @@ EMVIQ.getSourceGraphHTML = (emn)=>{
     let html = "";
 
     for (let e in emn.children){
+        
+        
         let E = emn.children[e];
-
-        //console.log(E)
+       
 
         // Entry title
-        html += "<details class='emviqSGEntry'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
+        html += "<details class='xx'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
 
         // Show here entry attributes
         if (E.description) html += "<b>Description: </b>"+ E.description + "<br><br>";
-        if (E.period) html += "<b>Period: </b>"+ E.period + "<br><br>";
-        if (E.url) html += "<a href="+ E.url + "><img src="+ E.url + " width='250' height='250' vertical-align='middle'></a><br>";
+        if (E.period) html += "<b>Chronology: </b>"+ E.period + "<br><br>";
+        if (E.url) html += "<div class='emviqDocImg'><img src="+ E.url + " width='250' height='250' vertical-align='middle'><br></div>";
         
         // Recurse
         html += EMVIQ.getSourceGraphHTML(E);
