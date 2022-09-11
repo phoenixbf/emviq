@@ -190,12 +190,16 @@ getNodeType(node){
     if (d.GenericNode){
         let sp = d.GenericNode.StyleProperties;
         if (!sp) return;
-
-        sp = this.getAttribute(sp.Property[3], "value");
-        if (!sp) return;
-
-        if (sp === "ARTIFACT_TYPE_DATA_OBJECT") return EMVIQ.NODETYPES.DOCUMENT;
-        if (sp === "ARTIFACT_TYPE_ANNOTATION") return EMVIQ.NODETYPES.PROPERTY;
+		
+		sp = this.getAttribute(sp.Property[3], "value");		
+        if (!sp) return;		
+		
+        
+		if (sp != "ARTIFACT_TYPE_ANNOTATION") {
+         return EMVIQ.NODETYPES.DOCUMENT;
+        }else (sp === "ARTIFACT_TYPE_ANNOTATION")
+        { return EMVIQ.NODETYPES.PROPERTY;};
+		
         }
 
     // SVG type
