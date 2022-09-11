@@ -189,18 +189,14 @@ getNodeType(node){
     // BPMN (Property or Document)
     if (d.GenericNode){
         let sp = d.GenericNode.StyleProperties;
-        if (!sp) return;
+        if (!sp) return undefined;
 		
 		sp = this.getAttribute(sp.Property[3], "value");		
-        if (!sp) return;		
-		
+        if (!sp) return undefined;		
         
-		if (sp != "ARTIFACT_TYPE_ANNOTATION") {
-         return EMVIQ.NODETYPES.DOCUMENT;
-        }else (sp === "ARTIFACT_TYPE_ANNOTATION")
-        { return EMVIQ.NODETYPES.PROPERTY;};
-		
-        }
+		if (sp != "ARTIFACT_TYPE_ANNOTATION") return EMVIQ.NODETYPES.DOCUMENT;
+        if (sp === "ARTIFACT_TYPE_ANNOTATION") return EMVIQ.NODETYPES.PROPERTY;	
+    }
 
     // SVG type
     if (d.SVGNode){
@@ -211,7 +207,7 @@ getNodeType(node){
         M = parseInt(this.getAttribute(M.SVGContent, "refid"));
         if (M === 1) return EMVIQ.NODETYPES.EXTRACTOR;
         if (M === 2) return EMVIQ.NODETYPES.COMBINER;
-        }
+    }
 
     return undefined;   // not recognized
 }

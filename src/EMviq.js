@@ -60,6 +60,10 @@ EMVIQ.getIconURLbyType = (type)=>{
     return "";
 };
 
+EMVIQ.getDosCoBaseURL = ()=>{
+
+};
+
 EMVIQ.x2js = new X2JS({attributePrefix:"@"});
 
 EMVIQ.buildColorPalette = ()=>{
@@ -138,7 +142,7 @@ EMVIQ.init = ()=>{
     ATON.FE.realize();
 
     EMVIQ.paramSID   = ATON.FE.urlParams.get('s');
-    EMVIQ.paramDDens = ATON.FE.urlParams.get('d');
+
     //EMVIQ.paramVRC   = ATON.FE.urlParams.get('vrc');
     //EMVIQ.paramEdit  = ATON.FE.urlParams.get('edit');
 
@@ -393,11 +397,11 @@ EMVIQ.setupEventHandlers = ()=>{
 
         ATON.SUI.setSelectorRadius(0.1);
     });
-
+/*
     ATON.on("MouseRightButton",()=>{
         ATON._bPauseQuery = !ATON._bPauseQuery;
     });
-
+*/
     ATON.on("XRmode", (b)=>{
         EMVIQ.suiDescBlock.visible = b;
         if (b) ATON.FE.popupClose();
@@ -576,12 +580,12 @@ EMVIQ.getSourceGraphHTML = (emn)=>{
        
 
         // Entry title
-        html += "<details class='xx'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
+        html += "<details class='emviqSGEntry'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
 
         // Show here entry attributes
         if (E.description) html += "<b>Description: </b>"+ E.description + "<br><br>";
-        if (E.period) html += "<b>Chronology: </b>"+ E.period + "<br><br>";
-        if (E.url) html += "<div class='emviqDocImg'><img src="+ E.url + " width='250' height='250' vertical-align='middle'><br></div>";
+        if (E.period) html += "<b>Chronology: </b>"+ E.period + "<br>";
+        if (E.url) html += "<img class='emviqSGDocImg' src='"+ATON.PATH_SCENES+EMVIQ.paramSID+"/"+E.url+"'>";
         
         // Recurse
         html += EMVIQ.getSourceGraphHTML(E);
@@ -606,7 +610,7 @@ EMVIQ.updateQueriedProxyInfo = function(did){
     // Retrieve root of source-graphs
     const emn = EMVIQ.currEM.getSourceGraphByProxyID(did);
 
-    content += "<div class='emviqSG'>"+EMVIQ.getSourceGraphHTML(emn)+"</div>";  
+    content += "<div class='emviqSG' style='height:500px'>"+EMVIQ.getSourceGraphHTML(emn)+"</div>";  
    
    $("#idProxyID").html(content);
 

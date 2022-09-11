@@ -1,13 +1,3 @@
-.emviqDocImg {
-  position: relative;
-  
-  transform: scale(1);
-  transition: transform .5s;
-}
-
-.emviqDocImg:hover {
-  transform: scale(1.5);
-}
 
 .emviqLabel {
     border: 0px;
@@ -167,12 +157,14 @@
 }
 */
 
+/* SourceGraph elements */
 .emviqSG {
     margin-top: 4px;
     margin-right: 0px;
-    max-width: 300px;
+    max-width: 400px;
 
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .emviqSGEntry {
@@ -198,6 +190,22 @@
 
     vertical-align: middle;
     margin-right: 2px;
+}
+
+.emviqSGDocImg {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    transform: scale(1);
+    transition: transform .5s;
+}
+  
+.emviqSGDocImg:hover {
+    transform: scale(1.5);
 }
 
 
