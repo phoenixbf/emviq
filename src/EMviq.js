@@ -24,28 +24,34 @@ EMVIQ.YED_dEdgeGraphics = "d10";
 EMVIQ.YED_dAttrDesc     = "d5";
 EMVIQ.YED_dAttrURL      = "d4";
 
-EMVIQ.YED_sSeriation = "ellipse";          // USV Series
+EMVIQ.YED_sSeriation = "ellipse";          // serSU (black fill) and serUSV (white fill)
 EMVIQ.YED_sUS        = "rectangle";        // SU (or US)
 EMVIQ.YED_sUSVS      = "parallelogram";    // Structural Virtual SU
 EMVIQ.YED_sUSVN      = "hexagon";          // Non-structural Virtual SU
-EMVIQ.YED_sSF        = "octagon";          // (virtual) special find
+EMVIQ.YED_sSF        = "octagon";          // SF (white fill) and VSF (black fill)
+EMVIQ.YED_sUSD       = "roundrectangle";   // USD (line border) and TSU (dashed border)
 
 EMVIQ.NODETYPES = {
-    SERIATION:0,
+    SERIATION:0,    // serSU - ellipse black fill (Series of USV/n)
     US:1,
     USVS:2,
     USVN:3,
-    SPECIALFIND:4,
+    SPECIALFIND:4,  // SF - octagon white fill
 
     COMBINER:5,
     EXTRACTOR:6,
     DOCUMENT:7,
     PROPERTY:8,
-    CONTINUITY:9
+    CONTINUITY:9,
+
+    USVSERIES:10,           // serUSV - ellipse white fill (Series of USs)
+    SPECIALFIND_VIRTUAL:11, // VSF - octagon black fill
+    USD:12,                 // roundrectangle solid border (Documentary SU)
+    TSU:13                  // roundrectangle dashed border (Transformation SU)
 };
 
 EMVIQ.getIconURLbyType = (type)=>{
-    if (type === EMVIQ.NODETYPES.SERIATION) return "res/emicons/SUseries.png";
+    if (type === EMVIQ.NODETYPES.SERIATION) return "res/emicons/serSU.png";
     if (type === EMVIQ.NODETYPES.US) return "res/emicons/US.png";
     if (type === EMVIQ.NODETYPES.USVS) return "res/emicons/USVs.png";
     if (type === EMVIQ.NODETYPES.USVN) return "res/emicons/USVn.png";
@@ -56,6 +62,11 @@ EMVIQ.getIconURLbyType = (type)=>{
     if (type === EMVIQ.NODETYPES.DOCUMENT) return "res/emicons/document.png";
     if (type === EMVIQ.NODETYPES.PROPERTY) return "res/emicons/property.png";
     if (type === EMVIQ.NODETYPES.CONTINUITY) return "res/emicons/continuity.png";
+
+    if (type === EMVIQ.NODETYPES.USVSERIES) return "res/emicons/serUSV.png";
+    if (type === EMVIQ.NODETYPES.SPECIALFIND_VIRTUAL) return "res/emicons/VSF.png";
+    if (type === EMVIQ.NODETYPES.USD) return "res/emicons/USD.png";
+    if (type === EMVIQ.NODETYPES.TSU) return "res/emicons/TSU.png";
 
     return "";
 };
@@ -75,11 +86,24 @@ EMVIQ.buildColorPalette = ()=>{
     let gcol = new THREE.Color(0.031*gm, 0.191*gm, 0.026*gm)
     let rcol = new THREE.Color(0.328*rm, 0.033*rm, 0.033*rm)
 
-    EMVIQ.colors.push( gcol ); // SERIATION
+    EMVIQ.colors.push( gcol ); // SERIATION (serSU)
     EMVIQ.colors.push( rcol ); // US
     EMVIQ.colors.push( new THREE.Color(0.018, 0.275, 0.799) ); // USVN
     EMVIQ.colors.push( gcol ); // USVS
     EMVIQ.colors.push( new THREE.Color(0.799, 0.753, 0.347) ); // SF
+
+    // padding to align indices 5..9 (COMBINER, EXTRACTOR, DOCUMENT, PROPERTY, CONTINUITY)
+    let pad = new THREE.Color(0.5, 0.5, 0.5);
+    EMVIQ.colors.push( pad ); // COMBINER (5)
+    EMVIQ.colors.push( pad ); // EXTRACTOR (6)
+    EMVIQ.colors.push( pad ); // DOCUMENT (7)
+    EMVIQ.colors.push( pad ); // PROPERTY (8)
+    EMVIQ.colors.push( pad ); // CONTINUITY (9)
+
+    EMVIQ.colors.push( rcol ); // USVSERIES (10) - serUSV, white ellipse / red border
+    EMVIQ.colors.push( new THREE.Color(0.694, 0.624, 0.380) ); // SPECIALFIND_VIRTUAL (11) - VSF (#B19F61)
+    EMVIQ.colors.push( new THREE.Color(0.847, 0.392, 0.000) ); // USD (12) - #D86400
+    EMVIQ.colors.push( rcol ); // TSU (13) - #9B3333 dashed
 
     EMVIQ.matProxyOFF = [];
     EMVIQ.matProxyON  = [];
@@ -569,15 +593,13 @@ EMVIQ.blurProxiesCurrPeriod = function(){
 };
 
 EMVIQ.getSourceGraphHTML = (emn)=>{
-    if (emn.children.lenght<1) return "";
+    if (!emn || !emn.children || emn.children.length < 1) return "";
 
     let html = "";
 
     for (let e in emn.children){
-        
-        
         let E = emn.children[e];
-       
+        if (!E) continue;
 
         // Entry title
         html += "<details class='emviqSGEntry'><summary class='emviqSNTitle'><img src='"+EMVIQ.getIconURLbyType(E.type)+"'>"+E.label+"</summary>";
@@ -586,7 +608,7 @@ EMVIQ.getSourceGraphHTML = (emn)=>{
         if (E.description) html += "<b>Description: </b>"+ E.description + "<br><br>";
         if (E.period) html += "<b>Chronology: </b>"+ E.period + "<br>";
         if (E.url) html += "<img class='emviqSGDocImg' src='"+ATON.PATH_SCENES+EMVIQ.paramSID+"/"+E.url+"'>";
-        
+
         // Recurse
         html += EMVIQ.getSourceGraphHTML(E);
         html += "</details>";

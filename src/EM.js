@@ -108,6 +108,20 @@ getNodeShape(node){
     //console.log(d);
 }
 
+getNodeFill(node){
+    if (!node.data) return undefined;
+    let d = this.findDataWithKey(node, EMVIQ.YED_dNodeGraphics);
+    if (!d || !d.ShapeNode || !d.ShapeNode.Fill) return undefined;
+    return this.getAttribute(d.ShapeNode.Fill, "color");
+}
+
+getNodeBorderType(node){
+    if (!node.data) return undefined;
+    let d = this.findDataWithKey(node, EMVIQ.YED_dNodeGraphics);
+    if (!d || !d.ShapeNode || !d.ShapeNode.BorderStyle) return undefined;
+    return this.getAttribute(d.ShapeNode.BorderStyle, "type");
+}
+
 getNodeFields(node){
     //console.log(node);
 
@@ -177,13 +191,25 @@ getNodeType(node){
 
         if (!s) return undefined;
 
-        // FIXME: use indexof
         let a = this.getAttribute(s, "type");
-        if (a === EMVIQ.YED_sSeriation) return EMVIQ.NODETYPES.SERIATION;
-        if (a === EMVIQ.YED_sSF)        return EMVIQ.NODETYPES.SPECIALFIND;
+
+        let fill   = d.ShapeNode.Fill ? this.getAttribute(d.ShapeNode.Fill, "color") : undefined;
+        let border = d.ShapeNode.BorderStyle ? this.getAttribute(d.ShapeNode.BorderStyle, "type") : undefined;
+        let bWhite = fill && fill.toUpperCase().startsWith("#FFFFFF");
+
         if (a === EMVIQ.YED_sUS)        return EMVIQ.NODETYPES.US;
         if (a === EMVIQ.YED_sUSVN)      return EMVIQ.NODETYPES.USVN;
         if (a === EMVIQ.YED_sUSVS)      return EMVIQ.NODETYPES.USVS;
+
+        if (a === EMVIQ.YED_sSeriation){
+            return bWhite ? EMVIQ.NODETYPES.USVSERIES : EMVIQ.NODETYPES.SERIATION;
+        }
+        if (a === EMVIQ.YED_sSF){
+            return bWhite ? EMVIQ.NODETYPES.SPECIALFIND : EMVIQ.NODETYPES.SPECIALFIND_VIRTUAL;
+        }
+        if (a === EMVIQ.YED_sUSD){
+            return (border === "dashed") ? EMVIQ.NODETYPES.TSU : EMVIQ.NODETYPES.USD;
+        }
         }
 
     // BPMN (Property or Document)
@@ -371,10 +397,15 @@ realizeProxyGraphFromJSONNode(graphnode){
             }
 
             // Single proxy
-            if (type === EMVIQ.NODETYPES.SPECIALFIND 
-                || type === EMVIQ.NODETYPES.US 
-                || type === EMVIQ.NODETYPES.USVN 
-                || type === EMVIQ.NODETYPES.USVS ){
+            if (type === EMVIQ.NODETYPES.SPECIALFIND
+                || type === EMVIQ.NODETYPES.SPECIALFIND_VIRTUAL
+                || type === EMVIQ.NODETYPES.US
+                || type === EMVIQ.NODETYPES.USVN
+                || type === EMVIQ.NODETYPES.USVS
+                || type === EMVIQ.NODETYPES.USD
+                || type === EMVIQ.NODETYPES.TSU
+                || type === EMVIQ.NODETYPES.SERIATION
+                || type === EMVIQ.NODETYPES.USVSERIES ){
                 bProxyNode = true;
                 
                 if (periodName){
@@ -436,7 +467,8 @@ realizeProxyGraphFromJSONNode(graphnode){
             }
 */
             // If accepted, push into EM nodes
-            if (type && periodName && fields.xmlID){
+            // NOTE: explicit !== undefined check because NODETYPES.SERIATION === 0 (falsy)
+            if (type !== undefined && periodName && fields.xmlID){
                 let EMkey = fields.xmlID;
 
                 this.EMnodes[EMkey] = new EMNode();
@@ -484,12 +516,24 @@ getSourceGraphByProxyID(id){
 buildEMgraph(graphnode){
     if (!graphnode) graphnode = this._mainGMLRoot;
 
-    //console.log(graphnode);
-    if (!graphnode.edge) return; // no edges found in GraphML
+    // Recurse into nested subgraphs (yEd swimlane / group nodes hold edges inside)
+    if (graphnode.node){
+        let nn = graphnode.node;
+        if (Array.isArray(nn)){
+            for (let i = 0; i < nn.length; i++){
+                if (nn[i] && nn[i].graph) this.buildEMgraph(nn[i].graph);
+            }
+        } else if (nn.graph){
+            this.buildEMgraph(nn.graph);
+        }
+    }
 
-    let numEdges = graphnode.edge.length;
+    if (!graphnode.edge) return; // no edges at this level
+
+    let edges = Array.isArray(graphnode.edge) ? graphnode.edge : [graphnode.edge];
+    let numEdges = edges.length;
     for (let i = 0; i < numEdges; i++){
-        let E = graphnode.edge[i];
+        let E = edges[i];
         if (E){
             let sourceID = String(this.getAttribute(E,"source"));
             let targetID = String(this.getAttribute(E,"target"));
